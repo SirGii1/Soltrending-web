@@ -254,7 +254,6 @@
         cursor: pointer;
         transition: all 0.3s ease;
         box-shadow: 0 5px 15px rgba(255, 165, 0, 0.3);
-        margin: 10px;
     }
 
     .pay-btn:hover:not(:disabled) {
@@ -266,78 +265,6 @@
         opacity: 0.6;
         cursor: not-allowed;
         transform: none;
-    }
-
-    .manual-pay-btn {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-    }
-
-    .manual-pay-btn:hover:not(:disabled) {
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-    }
-
-    .manual-payment-section {
-        background: rgba(102, 126, 234, 0.1);
-        border: 1px solid rgba(102, 126, 234, 0.3);
-        padding: 25px;
-        border-radius: 15px;
-        margin-top: 25px;
-        text-align: center;
-    }
-
-    .wallet-address-display {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        padding: 15px;
-        border-radius: 10px;
-        margin: 15px 0;
-        font-family: 'Courier New', monospace;
-        font-size: 1.1rem;
-        word-break: break-all;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .wallet-address-display:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: scale(1.02);
-    }
-
-    .copy-btn {
-        background: linear-gradient(135deg, #00ff00 0%, #32cd32 100%);
-        color: #333;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 10px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        margin: 10px;
-        transition: all 0.3s ease;
-    }
-
-    .copy-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
-    }
-
-    .verify-btn {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-        color: white;
-        border: none;
-        padding: 15px 30px;
-        border-radius: 15px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        cursor: pointer;
-        margin: 10px;
-        transition: all 0.3s ease;
-    }
-
-    .verify-btn:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
     }
 
     .status-message {
@@ -365,12 +292,6 @@
         color: #ffd700;
     }
 
-    .status-info {
-        background: rgba(0, 191, 255, 0.1);
-        border: 1px solid rgba(0, 191, 255, 0.3);
-        color: #00bfff;
-    }
-
     .hidden {
         display: none;
     }
@@ -389,14 +310,14 @@
         to { transform: rotate(360deg); }
     }
 
-    .retry-info {
-        background: rgba(255, 165, 0, 0.1);
-        border: 1px solid rgba(255, 165, 0, 0.3);
-        padding: 15px;
-        border-radius: 10px;
-        margin: 15px 0;
-        color: #ffa500;
-        text-align: center;
+    .balance-insufficient {
+        color: #ff6b6b;
+        font-weight: bold;
+    }
+
+    .balance-sufficient {
+        color: #00ff00;
+        font-weight: bold;
     }
 
     @media (max-width: 768px) {
@@ -410,10 +331,6 @@
         
         .container {
             padding: 15px;
-        }
-
-        .wallet-address-display {
-            font-size: 0.9rem;
         }
     }
 </style>
@@ -545,41 +462,9 @@
             </div>
         </div>
         
-        <div id="retryInfo" class="retry-info hidden">
-            <p>🔄 Attempt <span id="attemptCount">1</span> of 3</p>
-            <p>If automatic payment fails, manual payment option will appear.</p>
-        </div>
-        
         <button id="payBtn" class="pay-btn">
             Pay with SOL
         </button>
-        
-        <button id="manualPayBtn" class="pay-btn manual-pay-btn hidden">
-            Pay Manually
-        </button>
-        
-        <div id="manualPaymentSection" class="manual-payment-section hidden">
-            <h3 style="margin-bottom: 20px; color: #667eea;">Manual Payment</h3>
-            <p style="margin-bottom: 15px;">Send exactly <strong id="exactAmount">0 SOL</strong> to the address below:</p>
-            
-            <div id="recipientAddress" class="wallet-address-display" onclick="copyAddress()">
-                DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3
-            </div>
-            
-            <button id="copyAddressBtn" class="copy-btn" onclick="copyAddress()">
-                📋 Copy Address
-            </button>
-            
-            <div style="margin-top: 20px;">
-                <p style="margin-bottom: 15px; color: #ffa500;">
-                    ⚠️ Send exactly the required amount. After sending, click verify to confirm payment.
-                </p>
-                <button id="verifyPaymentBtn" class="verify-btn" onclick="verifyPayment()">
-                    🔍 Verify Payment
-                </button>
-            </div>
-        </div>
-        
         <div id="statusMessage"></div>
     </div>
 </div>
@@ -590,27 +475,29 @@
     let walletConnected = false;
     let wallet = null;
     let connection = null;
-    let paymentAttempts = 0;
-    let maxAttempts = 3;
 
     // Your recipient wallet address
     const RECIPIENT_ADDRESS = 'DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3';
-    const NETWORK_FEE_ESTIMATE = 0.000005;
+    const NETWORK_FEE_ESTIMATE = 0.000005; // Approximate transaction fee
 
     document.addEventListener('DOMContentLoaded', function() {
         initializeApp();
     });
 
     function initializeApp() {
+        // Initialize Solana connection to mainnet
         connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com', 'confirmed');
         
+        // Service selection
         document.querySelectorAll('.service-item').forEach(item => {
             item.addEventListener('click', () => selectService(item));
         });
 
+        // Wallet connection
         document.getElementById('connectWallet').addEventListener('click', connectWallet);
+        
+        // Payment
         document.getElementById('payBtn').addEventListener('click', processPayment);
-        document.getElementById('manualPayBtn').addEventListener('click', showManualPayment);
     }
 
     function selectService(item) {
@@ -624,7 +511,6 @@
             description: `${item.dataset.type === 'top7' ? 'Top 7' : 'Top 15'} Trending - ${item.dataset.duration} Hours`
         };
 
-        paymentAttempts = 0; // Reset attempts when selecting new service
         updatePaymentSection();
     }
 
@@ -640,39 +526,21 @@
                 </p>
             `;
             
+            // Update transaction details
             document.getElementById('serviceCost').textContent = `${selectedService.price} SOL`;
             const totalAmount = selectedService.price + NETWORK_FEE_ESTIMATE;
             document.getElementById('totalAmount').textContent = `${totalAmount.toFixed(6)} SOL`;
-            document.getElementById('exactAmount').textContent = `${selectedService.price} SOL`;
             
+            // Update pay button based on wallet connection only
             const payBtn = document.getElementById('payBtn');
-            const manualPayBtn = document.getElementById('manualPayBtn');
-            const retryInfo = document.getElementById('retryInfo');
-            
             if (!walletConnected) {
                 payBtn.disabled = true;
                 payBtn.textContent = 'Connect Wallet First';
                 payBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                manualPayBtn.classList.add('hidden');
-                retryInfo.classList.add('hidden');
-            } else if (paymentAttempts >= maxAttempts) {
-                payBtn.classList.add('hidden');
-                manualPayBtn.classList.remove('hidden');
-                retryInfo.classList.add('hidden');
-                showStatus('Automatic payment failed 3 times. Please use manual payment.', 'error');
             } else {
                 payBtn.disabled = false;
-                payBtn.textContent = paymentAttempts > 0 ? `Retry Payment (${paymentAttempts}/3)` : 'Pay with SOL';
+                payBtn.textContent = 'Pay with SOL';
                 payBtn.style.background = 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)';
-                
-                if (paymentAttempts > 0) {
-                    retryInfo.classList.remove('hidden');
-                    document.getElementById('attemptCount').textContent = paymentAttempts + 1;
-                    manualPayBtn.classList.remove('hidden');
-                } else {
-                    retryInfo.classList.add('hidden');
-                    manualPayBtn.classList.add('hidden');
-                }
             }
             
             paymentSection.classList.remove('hidden');
@@ -687,16 +555,19 @@
         connectBtn.innerHTML = '<span class="loading"></span> Connecting...';
 
         try {
+            // Check if Phantom is installed
             if (!window.solana || !window.solana.isPhantom) {
                 throw new Error('Phantom wallet not found! Please install Phantom wallet from phantom.app');
             }
 
+            // Request connection
             const response = await window.solana.connect();
             wallet = window.solana;
             walletConnected = true;
 
             const publicKey = response.publicKey.toString();
 
+            // Update UI
             document.getElementById('walletAddress').textContent = 
                 publicKey.substring(0, 4) + '...' + publicKey.substring(publicKey.length - 4);
             
@@ -704,10 +575,6 @@
             connectBtn.innerHTML = 'Wallet Connected ✓';
             connectBtn.style.background = 'linear-gradient(135deg, #00ff00 0%, #32cd32 100%)';
             
-            if (selectedService) {
-                updatePaymentSection();
-            }
-
             showStatus('Wallet connected successfully!', 'success');
 
         } catch (error) {
@@ -730,7 +597,6 @@
             return;
         }
 
-        paymentAttempts++;
         const payBtn = document.getElementById('payBtn');
         payBtn.disabled = true;
         payBtn.innerHTML = '<span class="loading"></span> Processing...';
@@ -738,13 +604,16 @@
         try {
             showStatus('Creating transaction...', 'pending');
 
+            // Get the latest blockhash
             const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('finalized');
             
+            // Create transaction
             const transaction = new solanaWeb3.Transaction({
                 recentBlockhash: blockhash,
                 feePayer: wallet.publicKey
             });
 
+            // Add transfer instruction
             const transferInstruction = solanaWeb3.SystemProgram.transfer({
                 fromPubkey: wallet.publicKey,
                 toPubkey: new solanaWeb3.PublicKey(RECIPIENT_ADDRESS),
@@ -755,10 +624,12 @@
 
             showStatus('Please approve the transaction in your wallet...', 'pending');
 
+            // Sign and send the transaction - let blockchain handle insufficient funds
             const { signature } = await wallet.signAndSendTransaction(transaction);
             
             showStatus('Transaction sent! Confirming...', 'pending');
 
+            // Confirm the transaction
             const confirmation = await connection.confirmTransaction({
                 signature,
                 blockhash,
@@ -766,6 +637,7 @@
             }, 'confirmed');
 
             if (confirmation.value.err) {
+                // Check if error is due to insufficient funds
                 const errorStr = JSON.stringify(confirmation.value.err);
                 if (errorStr.includes('insufficient funds') || errorStr.includes('InsufficientFundsForRent')) {
                     throw new Error('Insufficient SOL balance to complete this transaction');
@@ -774,16 +646,18 @@
                 }
             }
 
-            // Payment successful
-            showStatus(`✅ Payment confirmed! Transaction: ${signature.substring(0, 12)}...`, 'success');
+            showStatus(`✅ Payment successful! Transaction: ${signature.substring(0, 12)}...`, 'success');
             
             setTimeout(() => {
-                showStatus(`🚀 Payment confirmed! Your ${selectedService.description} boost will start in 10 minutes.`, 'success');
+                showStatus(`🚀 Your ${selectedService.description} boost service is now being activated!`, 'success');
             }, 2000);
             
-            // Reset everything after success
+            // Reset after success
             setTimeout(() => {
-                resetPaymentSection();
+                selectedService = null;
+                document.querySelectorAll('.service-item').forEach(el => el.classList.remove('selected'));
+                document.getElementById('paymentSection').classList.add('hidden');
+                document.getElementById('statusMessage').innerHTML = '';
             }, 8000);
 
         } catch (error) {
@@ -798,4 +672,54 @@
             } else if (error.message && error.message.includes('blockhash')) {
                 errorMessage += 'Network error, please try again';
             } else {
+                errorMessage += error.message || 'Unknown error occurred';
+            }
+            
+            showStatus(errorMessage, 'error');
+        } finally {
+            payBtn.disabled = false;
+            payBtn.innerHTML = 'Pay with SOL';
+            updatePaymentSection(); // This will update button state
+        }
+    }
+
+    function showStatus(message, type) {
+        const statusDiv = document.getElementById('statusMessage');
+        statusDiv.innerHTML = message;
+        statusDiv.className = `status-message status-${type}`;
+        statusDiv.style.display = 'block';
+    }
+
+    // Handle wallet events
+    if (window.solana) {
+        window.solana.on('disconnect', () => {
+            walletConnected = false;
+            wallet = null;
+            
+            document.getElementById('walletInfo').classList.add('hidden');
+            const connectBtn = document.getElementById('connectWallet');
+            connectBtn.innerHTML = 'Connect Solana Wallet';
+            connectBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            connectBtn.disabled = false;
+            
+            if (selectedService) {
+                updatePaymentSection();
+            }
+        });
+
+        window.solana.on('accountChanged', async (publicKey) => {
+            if (publicKey) {
+                const publicKeyString = publicKey.toString();
+                document.getElementById('walletAddress').textContent = 
+                    publicKeyString.substring(0, 4) + '...' + publicKeyString.substring(publicKeyString.length - 4);
+            } else {
+                walletConnected = false;
+                document.getElementById('walletInfo').classList.add('hidden');
+            }
+        });
+    }
+</script>
 ```
+
+</body>
+</html>
