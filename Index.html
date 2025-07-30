@@ -82,47 +82,6 @@
             margin-bottom: 30px;
         }
 
-        .wallet-section {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .connect-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 15px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .connect-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-        }
-
-        .connect-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .wallet-info {
-            background: rgba(0, 255, 0, 0.1);
-            border: 1px solid rgba(0, 255, 0, 0.3);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
         .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
@@ -217,103 +176,63 @@
             margin-bottom: 25px;
         }
 
-        .transaction-details {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .payment-amount-highlight {
+            background: rgba(255, 215, 0, 0.2);
             padding: 20px;
             border-radius: 15px;
-            margin-bottom: 25px;
-            text-align: left;
+            margin: 20px 0;
+            text-align: center;
+            border: 2px solid rgba(255, 215, 0, 0.4);
         }
 
-        .transaction-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            padding: 5px 0;
-        }
-
-        .transaction-row:last-child {
-            margin-bottom: 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            padding-top: 10px;
+        .amount-display {
+            font-size: 2.5rem;
             font-weight: bold;
             color: #FFD700;
-        }
-
-        .pay-btn {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #333;
-            border: none;
-            padding: 18px 40px;
-            border-radius: 15px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(255, 165, 0, 0.3);
-            margin-bottom: 15px;
-        }
-
-        .pay-btn:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(255, 165, 0, 0.4);
-        }
-
-        .pay-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .manual-payment-section {
-            background: rgba(255, 165, 0, 0.1);
-            border: 2px solid rgba(255, 165, 0, 0.3);
-            border-radius: 15px;
-            padding: 25px;
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .manual-payment-title {
-            color: #FFA500;
-            font-size: 1.3rem;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-align: center;
+            margin-top: 10px;
         }
 
         .copy-address-container {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
             background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .copy-address-container:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #4ECDC4;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(76, 205, 196, 0.2);
         }
 
         .wallet-address-display {
             flex: 1;
             font-family: monospace;
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: #FFD700;
             font-weight: bold;
             word-break: break-all;
+            text-align: left;
         }
 
         .copy-btn {
             background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
+            padding: 12px 20px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
             white-space: nowrap;
+            font-size: 1rem;
         }
 
         .copy-btn:hover {
@@ -325,36 +244,58 @@
             background: linear-gradient(135deg, #00ff00 0%, #32cd32 100%);
         }
 
-        .manual-instructions {
+        .payment-instructions {
             background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 15px 0;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            text-align: left;
         }
 
-        .manual-instructions ol {
-            margin-left: 20px;
-            margin-top: 10px;
-        }
-
-        .manual-instructions li {
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-
-        .payment-amount-highlight {
-            background: rgba(255, 215, 0, 0.2);
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            text-align: center;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-        }
-
-        .amount-display {
-            font-size: 1.5rem;
-            font-weight: bold;
+        .payment-instructions h3 {
             color: #FFD700;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+
+        .payment-instructions ol {
+            margin-left: 20px;
+            margin-top: 15px;
+        }
+
+        .payment-instructions li {
+            margin-bottom: 12px;
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+
+        .important-note {
+            background: rgba(255, 165, 0, 0.1);
+            border: 2px solid rgba(255, 165, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .important-note strong {
+            color: #FFA500;
+            font-size: 1.1rem;
+        }
+
+        .contact-info {
+            background: rgba(76, 205, 196, 0.1);
+            border: 1px solid rgba(76, 205, 196, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 25px;
+        }
+
+        .contact-info h3 {
+            color: #4ECDC4;
+            margin-bottom: 10px;
+            text-align: center;
         }
 
         .status-message {
@@ -370,55 +311,27 @@
             color: #00ff00;
         }
 
-        .status-error {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid rgba(255, 0, 0, 0.3);
-            color: #ff6b6b;
-        }
-
-        .status-pending {
-            background: rgba(255, 255, 0, 0.1);
-            border: 1px solid rgba(255, 255, 0, 0.3);
-            color: #ffd700;
-        }
-
-        .failure-counter {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid rgba(255, 0, 0, 0.3);
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            text-align: center;
-            color: #ff6b6b;
-            font-size: 0.9rem;
-        }
-
         .hidden {
             display: none;
         }
 
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .balance-insufficient {
-            color: #ff6b6b;
+        .copy-feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
             font-weight: bold;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .balance-sufficient {
-            color: #00ff00;
-            font-weight: bold;
+        .copy-feedback.show {
+            opacity: 1;
         }
 
         @media (max-width: 768px) {
@@ -436,11 +349,21 @@
 
             .copy-address-container {
                 flex-direction: column;
+                gap: 15px;
             }
 
             .wallet-address-display {
                 text-align: center;
-                margin-bottom: 10px;
+                font-size: 0.9rem;
+            }
+
+            .amount-display {
+                font-size: 2rem;
+            }
+
+            .copy-btn {
+                width: 100%;
+                padding: 15px;
             }
         }
     </style>
@@ -459,18 +382,6 @@
                 <h1>SolTrending</h1>
             </div>
             <p class="subtitle">Boost your token to trending with our premium services</p>
-        </div>
-
-        <div class="wallet-section">
-            <h2 style="margin-bottom: 20px; text-align: center;">Connect Your Wallet</h2>
-            <div style="text-align: center;">
-                <button id="connectWallet" class="connect-btn">
-                    Connect Solana Wallet
-                </button>
-                <div id="walletInfo" class="wallet-info hidden">
-                    <p><strong>Connected:</strong> <span id="walletAddress"></span></p>
-                </div>
-            </div>
         </div>
 
         <div class="services-grid">
@@ -550,114 +461,80 @@
         </div>
 
         <div id="paymentSection" class="payment-section hidden">
-            <h2 style="margin-bottom: 25px;">Complete Your Purchase</h2>
+            <h2 style="margin-bottom: 25px;">💰 Manual Payment</h2>
             <div id="selectedServiceInfo" class="selected-service"></div>
             
-            <div id="transactionDetails" class="transaction-details">
-                <h3 style="margin-bottom: 15px; color: #FFD700;">Transaction Details</h3>
-                <div class="transaction-row">
-                    <span>Service Cost:</span>
-                    <span id="serviceCost">0 SOL</span>
-                </div>
-                <div class="transaction-row">
-                    <span>Network Fee (est.):</span>
-                    <span id="networkFee">~0.000005 SOL</span>
-                </div>
-                <div class="transaction-row">
-                    <span>Total Amount:</span>
-                    <span id="totalAmount">0 SOL</span>
-                </div>
-            </div>
-            
-            <div id="failureCounter" class="failure-counter hidden">
-                Automatic payment failed <span id="failureCount">0</span>/3 times
+            <div class="payment-amount-highlight">
+                <div style="font-size: 1.2rem; opacity: 0.9;">Send exactly:</div>
+                <div class="amount-display" id="paymentAmount">0 SOL</div>
             </div>
 
-            <button id="payBtn" class="pay-btn">
-                Pay with SOL
-            </button>
+            <div style="margin: 20px 0; font-size: 1.1rem; font-weight: 600;">
+                <span style="color: #FFD700;">📍 Payment Address:</span>
+            </div>
 
-            <div id="manualPaymentSection" class="manual-payment-section hidden">
-                <div class="manual-payment-title">
-                    🔧 Manual Payment Option
+            <div class="copy-address-container" id="copyAddressContainer">
+                <div class="wallet-address-display" id="recipientAddressDisplay">
+                    DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3
                 </div>
-                
-                <p style="text-align: center; margin-bottom: 20px; opacity: 0.9;">
-                    Automatic payment isn't working? No problem! You can send the payment manually using any Solana wallet.
+                <button class="copy-btn" id="copyAddressBtn">
+                    📋 Copy
+                </button>
+            </div>
+
+            <div class="payment-instructions">
+                <h3>🔧 How to Pay</h3>
+                <ol>
+                    <li><strong>Tap to copy</strong> the wallet address above</li>
+                    <li><strong>Open your Solana wallet</strong> (Phantom, Solflare, Backpack, etc.)</li>
+                    <li><strong>Send exactly <span id="exactAmountText">0 SOL</span></strong> to the copied address</li>
+                    <li><strong>Include your token contract address</strong> in the transaction memo (optional but recommended)</li>
+                    <li><strong>Wait for confirmation</strong> - Your boost service will be activated within 10-30 minutes</li>
+                </ol>
+            </div>
+
+            <div class="important-note">
+                <p>
+                    <strong>⚠️ Important:</strong> Send the exact amount shown above from the Solana mainnet. 
+                    Incorrect amounts or wrong networks may delay processing.
                 </p>
+            </div>
 
-                <div class="payment-amount-highlight">
-                    <div>Send exactly:</div>
-                    <div class="amount-display" id="manualPaymentAmount">0 SOL</div>
-                </div>
-
-                <div style="margin: 15px 0;">
-                    <strong>To this wallet address:</strong>
-                </div>
-
-                <div class="copy-address-container">
-                    <div class="wallet-address-display" id="recipientAddressDisplay">
-                        DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3
-                    </div>
-                    <button class="copy-btn" id="copyAddressBtn">Copy</button>
-                </div>
-
-                <div class="manual-instructions">
-                    <strong>How to pay manually:</strong>
-                    <ol>
-                        <li>Copy the wallet address above</li>
-                        <li>Open your Solana wallet (Phantom, Solflare, etc.)</li>
-                        <li>Send exactly <strong id="exactAmount">0 SOL</strong> to the copied address</li>
-                        <li>Wait for the transaction to confirm</li>
-                        <li>Your boost service will be activated automatically</li>
-                    </ol>
-                </div>
-
-                <div style="text-align: center; margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
-                    <p style="font-size: 0.9rem; opacity: 0.8;">
-                        ⚠️ <strong>Important:</strong> Send the exact amount shown above. Incorrect amounts may delay processing.
-                    </p>
-                </div>
+            <div class="contact-info">
+                <h3>📞 Need Help?</h3>
+                <p style="text-align: center; margin-top: 10px;">
+                    Having issues with payment? Contact our support team with your transaction hash for assistance.
+                </p>
             </div>
 
             <div id="statusMessage"></div>
         </div>
     </div>
 
-    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+    <!-- Copy feedback popup -->
+    <div id="copyFeedback" class="copy-feedback">
+        ✅ Address copied to clipboard!
+    </div>
+
     <script>
         let selectedService = null;
-        let walletConnected = false;
-        let wallet = null;
-        let connection = null;
-        let paymentFailureCount = 0;
 
         // Your recipient wallet address
         const RECIPIENT_ADDRESS = 'DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3';
-        const NETWORK_FEE_ESTIMATE = 0.000005; // Approximate transaction fee
-        const MAX_PAYMENT_FAILURES = 3;
 
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
         });
 
         function initializeApp() {
-            // Initialize Solana connection to mainnet
-            connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com', 'confirmed');
-            
             // Service selection
             document.querySelectorAll('.service-item').forEach(item => {
                 item.addEventListener('click', () => selectService(item));
             });
 
-            // Wallet connection
-            document.getElementById('connectWallet').addEventListener('click', connectWallet);
-            
-            // Payment
-            document.getElementById('payBtn').addEventListener('click', processPayment);
-
             // Copy address functionality
             document.getElementById('copyAddressBtn').addEventListener('click', copyRecipientAddress);
+            document.getElementById('copyAddressContainer').addEventListener('click', copyRecipientAddress);
         }
 
         function selectService(item) {
@@ -671,11 +548,6 @@
                 description: `${item.dataset.type === 'top7' ? 'Top 7' : 'Top 15'} Trending - ${item.dataset.duration} Hours`
             };
 
-            // Reset failure count when selecting a new service
-            paymentFailureCount = 0;
-            document.getElementById('failureCounter').classList.add('hidden');
-            document.getElementById('manualPaymentSection').classList.add('hidden');
-
             updatePaymentSection();
         }
 
@@ -685,141 +557,92 @@
             
             if (selectedService) {
                 selectedServiceInfo.innerHTML = `
-                    <h3>${selectedService.description}</h3>
-                    <p style="font-size: 1.5rem; font-weight: bold; color: #FFD700; margin-top: 10px;">
-                        ${selectedService.price} SOL
+                    <h3 style="font-size: 1.5rem; margin-bottom: 10px;">${selectedService.description}</h3>
+                    <p style="font-size: 1rem; opacity: 0.8;">
+                        Get your token trending for ${selectedService.duration} hours with our premium boost service
                     </p>
                 `;
                 
-                // Update transaction details
-                document.getElementById('serviceCost').textContent = `${selectedService.price} SOL`;
-                const totalAmount = selectedService.price + NETWORK_FEE_ESTIMATE;
-                document.getElementById('totalAmount').textContent = `${totalAmount.toFixed(6)} SOL`;
-                
-                // Update manual payment amounts
-                document.getElementById('manualPaymentAmount').textContent = `${selectedService.price} SOL`;
-                document.getElementById('exactAmount').textContent = `${selectedService.price} SOL`;
-                
-                // Update pay button based on wallet connection only
-                const payBtn = document.getElementById('payBtn');
-                if (!walletConnected) {
-                    payBtn.disabled = true;
-                    payBtn.textContent = 'Connect Wallet First';
-                    payBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                } else {
-                    payBtn.disabled = false;
-                    payBtn.textContent = 'Pay with SOL';
-                    payBtn.style.background = 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)';
-                }
+                // Update payment amounts
+                document.getElementById('paymentAmount').textContent = `${selectedService.price} SOL`;
+                document.getElementById('exactAmountText').textContent = `${selectedService.price} SOL`;
                 
                 paymentSection.classList.remove('hidden');
+                
+                // Scroll to payment section
+                paymentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             } else {
                 paymentSection.classList.add('hidden');
             }
         }
 
-        async function connectWallet() {
-            const connectBtn = document.getElementById('connectWallet');
-            connectBtn.disabled = true;
-            connectBtn.innerHTML = '<span class="loading"></span> Connecting...';
+        async function copyRecipientAddress() {
+            const addressText = RECIPIENT_ADDRESS;
+            const copyBtn = document.getElementById('copyAddressBtn');
+            const feedback = document.getElementById('copyFeedback');
 
             try {
-                // Check if Phantom is installed
-                if (!window.solana || !window.solana.isPhantom) {
-                    throw new Error('Phantom wallet not found! Please install Phantom wallet from phantom.app');
-                }
-
-                // Request connection
-                const response = await window.solana.connect();
-                wallet = window.solana;
-                walletConnected = true;
-
-                const publicKey = response.publicKey.toString();
-
-                // Update UI
-                document.getElementById('walletAddress').textContent = 
-                    publicKey.substring(0, 4) + '...' + publicKey.substring(publicKey.length - 4);
+                await navigator.clipboard.writeText(addressText);
                 
-                document.getElementById('walletInfo').classList.remove('hidden');
-                connectBtn.innerHTML = 'Wallet Connected ✓';
-                connectBtn.style.background = 'linear-gradient(135deg, #00ff00 0%, #32cd32 100%)';
+                // Update button text
+                copyBtn.innerHTML = '✅ Copied!';
+                copyBtn.classList.add('copied');
                 
-                showStatus('Wallet connected successfully!', 'success');
-
-                if (selectedService) {
-                    updatePaymentSection();
+                // Show feedback popup
+                feedback.classList.add('show');
+                
+                // Show success status
+                showStatus('✅ Wallet address copied to clipboard! Open your Solana wallet to send the payment.', 'success');
+                
+                // Reset button after 3 seconds
+                setTimeout(() => {
+                    copyBtn.innerHTML = '📋 Copy';
+                    copyBtn.classList.remove('copied');
+                    feedback.classList.remove('show');
+                }, 3000);
+                
+            } catch (err) {
+                console.error('Failed to copy address:', err);
+                
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = addressText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                
+                try {
+                    document.execCommand('copy');
+                    copyBtn.innerHTML = '✅ Copied!';
+                    copyBtn.classList.add('copied');
+                    feedback.classList.add('show');
+                    showStatus('✅ Wallet address copied to clipboard!', 'success');
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = '📋 Copy';
+                        copyBtn.classList.remove('copied');
+                        feedback.classList.remove('show');
+                    }, 3000);
+                } catch (fallbackErr) {
+                    showStatus('❌ Failed to copy address. Please copy manually: ' + addressText, 'error');
                 }
-
-            } catch (error) {
-                console.error('Wallet connection failed:', error);
-                showStatus('Failed to connect wallet: ' + error.message, 'error');
-                connectBtn.disabled = false;
-                connectBtn.innerHTML = 'Connect Solana Wallet';
-                connectBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                
+                document.body.removeChild(textArea);
             }
         }
 
-        async function processPayment() {
-            if (!walletConnected || !wallet) {
-                showStatus('Please connect your wallet first', 'error');
-                return;
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.innerHTML = message;
+            statusDiv.className = `status-message status-${type}`;
+            statusDiv.style.display = 'block';
+            
+            // Auto-hide success messages after 10 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 10000);
             }
-
-            if (!selectedService) {
-                showStatus('Please select a service first', 'error');
-                return;
-            }
-
-            const payBtn = document.getElementById('payBtn');
-            payBtn.disabled = true;
-            payBtn.innerHTML = '<span class="loading"></span> Processing...';
-
-            try {
-                showStatus('Creating transaction...', 'pending');
-
-                // Get the latest blockhash
-                const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('finalized');
-                
-                // Create transaction
-                const transaction = new solanaWeb3.Transaction({
-                    recentBlockhash: blockhash,
-                    feePayer: wallet.publicKey
-                });
-
-                // Add transfer instruction
-                const transferInstruction = solanaWeb3.SystemProgram.transfer({
-                    fromPubkey: wallet.publicKey,
-                    toPubkey: new solanaWeb3.PublicKey(RECIPIENT_ADDRESS),
-                    lamports: Math.floor(selectedService.price * solanaWeb3.LAMPORTS_PER_SOL)
-                });
-
-                transaction.add(transferInstruction);
-
-                showStatus('Please approve the transaction in your wallet...', 'pending');
-
-                // Sign and send the transaction - let blockchain handle insufficient funds
-                const { signature } = await wallet.signAndSendTransaction(transaction);
-                
-                showStatus('Transaction sent! Confirming...', 'pending');
-
-                // Confirm the transaction
-                const confirmation = await connection.confirmTransaction({
-                    signature,
-                    blockhash,
-                    lastValidBlockHeight
-                }, 'confirmed');
-
-                if (confirmation.value.err) {
-                    // Check if error is due to insufficient funds
-                    const errorStr = JSON.stringify(confirmation.value.err);
-                    if (errorStr.includes('insufficient funds') || errorStr.includes('InsufficientFundsForRent')) {
-                        throw new Error('Insufficient SOL balance to complete this transaction');
-                    } else {
-                        throw new Error('Transaction failed: ' + errorStr);
-                    }
-                }
-
-                showStatus(`✅ Payment successful! Transaction: ${signature.substring(0, 12)}...`, 'success');
-                
-                // Reset failure count on success
-                paymentFailureCount
+        }
+    </script>
+</body>
+</html>
