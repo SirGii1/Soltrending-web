@@ -426,8 +426,8 @@
         });
 
         function initializeApp() {
-            // Initialize Solana connection
-            connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com');
+            // Initialize Solana connection to mainnet
+            connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com', 'confirmed');
             
             // Check for saved wallet connection
             checkSavedWallet();
@@ -446,7 +446,6 @@
 
         async function checkSavedWallet() {
             try {
-                // Use localStorage instead of sessionStorage for persistence across sessions
                 const savedWallet = localStorage.getItem('solana_wallet_connected');
                 const savedAddress = localStorage.getItem('solana_wallet_address');
                 
@@ -455,21 +454,35 @@
                         wallet = window.solana;
                         walletConnected = true;
                         
-                        // Update UI
                         document.getElementById('walletAddress').textContent = 
                             savedAddress.substring(0, 4) + '...' + savedAddress.substring(savedAddress.length - 4);
-                        
-                        await updateBalance(savedAddress);
                         
                         document.getElementById('walletInfo').classList.remove('hidden');
                         const connectBtn = document.getElementById('connectWallet');
                         connectBtn.innerHTML = 'Wallet Connected ✓';
                         connectBtn.style.background = 'linear-gradient(135deg, #00ff00 0%, #32cd32 100%)';
-                        connectBtn.disabled = false;
+                        
+                        // Try to get balance
+                        getWalletBalance();
                     }
                 }
             } catch (error) {
-                console.log('No previous wallet connection found:', error);
+                console.log('No previous wallet connection found');
+            }
+        }
+
+        async function getWalletBalance() {
+            try {
+                if (wallet && wallet.publicKey && connection) {
+                    const balance = await connection.getBalance(wallet.publicKey);
+                    const solBalance = (balance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(4);
+                    document.getElementById('walletBalance').textContent = solBalance;
+                } else {
+                    document.getElementById('walletBalance').textContent = 'Connected';
+                }
+            } catch (error) {
+                console.error('Failed to get balance:', error);
+                document.getElementById('walletBalance').textContent = 'Connected';
             }
         }
 
@@ -528,32 +541,17 @@
                 document.getElementById('walletAddress').textContent = 
                     publicKey.substring(0, 4) + '...' + publicKey.substring(publicKey.length - 4);
                 
-                await updateBalance(publicKey);
-                
                 document.getElementById('walletInfo').classList.remove('hidden');
                 connectBtn.innerHTML = 'Wallet Connected ✓';
                 connectBtn.style.background = 'linear-gradient(135deg, #00ff00 0%, #32cd32 100%)';
+                
+                getWalletBalance();
 
             } catch (error) {
                 console.error('Wallet connection failed:', error);
                 showStatus('Failed to connect wallet: ' + error.message, 'error');
                 connectBtn.disabled = false;
                 connectBtn.innerHTML = 'Connect Solana Wallet';
-            }
-        }
-
-        async function updateBalance(publicKeyString) {
-            try {
-                if (!connection || !publicKeyString) return;
-
-                const publicKey = new solanaWeb3.PublicKey(publicKeyString);
-                const balance = await connection.getBalance(publicKey);
-                const solBalance = (balance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(4);
-                
-                document.getElementById('walletBalance').textContent = solBalance;
-            } catch (error) {
-                console.error('Failed to get balance:', error);
-                document.getElementById('walletBalance').textContent = 'Connected';
             }
         }
 
@@ -573,34 +571,39 @@
             payBtn.innerHTML = '<span class="loading"></span> Processing Payment...';
 
             try {
-                showStatus('Preparing transaction...', 'pending');
+                showStatus('Creating transaction...', 'pending');
 
-                // Get latest blockhash
+                // Get the latest blockhash
                 const { blockhash } = await connection.getLatestBlockhash();
-
+                
                 // Create transaction
-                const transaction = new solanaWeb3.Transaction();
-                transaction.recentBlockhash = blockhash;
-                transaction.feePayer = wallet.publicKey;
+                const transaction = new solanaWeb3.Transaction({
+                    recentBlockhash: blockhash,
+                    feePayer: wallet.publicKey
+                });
 
                 // Add transfer instruction
                 const transferInstruction = solanaWeb3.SystemProgram.transfer({
                     fromPubkey: wallet.publicKey,
                     toPubkey: new solanaWeb3.PublicKey(RECIPIENT_ADDRESS),
-                    lamports: selectedService.price * solanaWeb3.LAMPORTS_PER_SOL
+                    lamports: Math.floor(selectedService.price * solanaWeb3.LAMPORTS_PER_SOL)
                 });
 
                 transaction.add(transferInstruction);
 
                 showStatus('Please approve the transaction in your wallet...', 'pending');
 
-                // Sign and send transaction
+                // Sign the transaction
                 const signedTransaction = await wallet.signTransaction(transaction);
+                
+                showStatus('Sending transaction...', 'pending');
+
+                // Send the transaction
                 const signature = await connection.sendRawTransaction(signedTransaction.serialize());
+                
+                showStatus('Confirming transaction...', 'pending');
 
-                showStatus('Transaction sent! Confirming...', 'pending');
-
-                // Confirm transaction
+                // Confirm the transaction
                 const confirmation = await connection.confirmTransaction(signature, 'confirmed');
 
                 if (confirmation.value.err) {
@@ -625,14 +628,15 @@
                 console.error('Payment failed:', error);
                 
                 let errorMessage = 'Payment failed: ';
-                if (error.message.includes('User rejected') || error.message.includes('cancelled')) {
+                
+                if (error.message && (error.message.includes('User rejected') || error.message.includes('cancelled'))) {
                     errorMessage += 'Transaction was cancelled by user';
-                } else if (error.message.includes('insufficient funds')) {
+                } else if (error.message && error.message.includes('insufficient funds')) {
                     errorMessage += 'Insufficient SOL balance';
-                } else if (error.message.includes('blockhash')) {
+                } else if (error.message && error.message.includes('blockhash')) {
                     errorMessage += 'Network error, please try again';
                 } else {
-                    errorMessage += error.message || 'Please try again';
+                    errorMessage += error.message || 'Unknown error occurred';
                 }
                 
                 showStatus(errorMessage, 'error');
@@ -655,7 +659,6 @@
                 walletConnected = false;
                 wallet = null;
                 
-                // Clear saved wallet data
                 localStorage.removeItem('solana_wallet_connected');
                 localStorage.removeItem('solana_wallet_address');
                 
@@ -672,7 +675,6 @@
                     localStorage.setItem('solana_wallet_address', publicKeyString);
                     document.getElementById('walletAddress').textContent = 
                         publicKeyString.substring(0, 4) + '...' + publicKeyString.substring(publicKeyString.length - 4);
-                    updateBalance(publicKeyString);
                 } else {
                     walletConnected = false;
                     localStorage.removeItem('solana_wallet_connected');
