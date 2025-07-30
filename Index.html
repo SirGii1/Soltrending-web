@@ -362,7 +362,6 @@
             </button>
             <div id="walletInfo" class="wallet-info hidden">
                 <p><strong>Connected:</strong> <span id="walletAddress"></span></p>
-                <p><strong>Balance:</strong> <span id="walletBalance">Loading...</span> SOL</p>
             </div>
         </div>
     </div>
@@ -476,7 +475,6 @@
     let walletConnected = false;
     let wallet = null;
     let connection = null;
-    let walletBalance = 0;
 
     // Your recipient wallet address
     const RECIPIENT_ADDRESS = 'DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3';
@@ -502,41 +500,6 @@
         document.getElementById('payBtn').addEventListener('click', processPayment);
     }
 
-    async function getWalletBalance() {
-        try {
-            if (wallet && wallet.publicKey && connection) {
-                const balance = await connection.getBalance(wallet.publicKey);
-                walletBalance = balance / solanaWeb3.LAMPORTS_PER_SOL;
-                const formattedBalance = walletBalance.toFixed(6);
-                
-                const balanceElement = document.getElementById('walletBalance');
-                balanceElement.textContent = formattedBalance;
-                
-                // Update balance display color based on selected service
-                updateBalanceDisplay();
-            } else {
-                document.getElementById('walletBalance').textContent = 'Error loading';
-            }
-        } catch (error) {
-            console.error('Failed to get balance:', error);
-            document.getElementById('walletBalance').textContent = 'Error loading';
-        }
-    }
-
-    function updateBalanceDisplay() {
-        const balanceElement = document.getElementById('walletBalance');
-        if (selectedService) {
-            const totalRequired = selectedService.price + NETWORK_FEE_ESTIMATE;
-            if (walletBalance >= totalRequired) {
-                balanceElement.className = 'balance-sufficient';
-            } else {
-                balanceElement.className = 'balance-insufficient';
-            }
-        } else {
-            balanceElement.className = '';
-        }
-    }
-
     function selectService(item) {
         document.querySelectorAll('.service-item').forEach(el => el.classList.remove('selected'));
         item.classList.add('selected');
@@ -549,7 +512,6 @@
         };
 
         updatePaymentSection();
-        updateBalanceDisplay();
     }
 
     function updatePaymentSection() {
@@ -569,17 +531,16 @@
             const totalAmount = selectedService.price + NETWORK_FEE_ESTIMATE;
             document.getElementById('totalAmount').textContent = `${totalAmount.toFixed(6)} SOL`;
             
-            // Enable/disable pay button based on balance
+            // Update pay button based on wallet connection only
             const payBtn = document.getElementById('payBtn');
-            if (walletConnected && walletBalance < totalAmount) {
-                payBtn.disabled = true;
-                payBtn.textContent = 'Insufficient SOL Balance';
-            } else if (!walletConnected) {
+            if (!walletConnected) {
                 payBtn.disabled = true;
                 payBtn.textContent = 'Connect Wallet First';
+                payBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
             } else {
                 payBtn.disabled = false;
                 payBtn.textContent = 'Pay with SOL';
+                payBtn.style.background = 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)';
             }
             
             paymentSection.classList.remove('hidden');
@@ -614,14 +575,6 @@
             connectBtn.innerHTML = 'Wallet Connected ✓';
             connectBtn.style.background = 'linear-gradient(135deg, #00ff00 0%, #32cd32 100%)';
             
-            // Get balance
-            await getWalletBalance();
-            
-            // Update payment section if service is selected
-            if (selectedService) {
-                updatePaymentSection();
-            }
-
             showStatus('Wallet connected successfully!', 'success');
 
         } catch (error) {
@@ -641,12 +594,6 @@
 
         if (!selectedService) {
             showStatus('Please select a service first', 'error');
-            return;
-        }
-
-        const totalRequired = selectedService.price + NETWORK_FEE_ESTIMATE;
-        if (walletBalance < totalRequired) {
-            showStatus(`Insufficient balance. You need ${totalRequired.toFixed(6)} SOL but only have ${walletBalance.toFixed(6)} SOL`, 'error');
             return;
         }
 
@@ -677,7 +624,7 @@
 
             showStatus('Please approve the transaction in your wallet...', 'pending');
 
-            // Sign and send the transaction
+            // Sign and send the transaction - let blockchain handle insufficient funds
             const { signature } = await wallet.signAndSendTransaction(transaction);
             
             showStatus('Transaction sent! Confirming...', 'pending');
@@ -690,13 +637,16 @@
             }, 'confirmed');
 
             if (confirmation.value.err) {
-                throw new Error('Transaction failed: ' + JSON.stringify(confirmation.value.err));
+                // Check if error is due to insufficient funds
+                const errorStr = JSON.stringify(confirmation.value.err);
+                if (errorStr.includes('insufficient funds') || errorStr.includes('InsufficientFundsForRent')) {
+                    throw new Error('Insufficient SOL balance to complete this transaction');
+                } else {
+                    throw new Error('Transaction failed: ' + errorStr);
+                }
             }
 
             showStatus(`✅ Payment successful! Transaction: ${signature.substring(0, 12)}...`, 'success');
-            
-            // Update balance
-            await getWalletBalance();
             
             setTimeout(() => {
                 showStatus(`🚀 Your ${selectedService.description} boost service is now being activated!`, 'success');
@@ -717,8 +667,8 @@
             
             if (error.message && (error.message.includes('User rejected') || error.message.includes('cancelled'))) {
                 errorMessage += 'Transaction was cancelled by user';
-            } else if (error.message && error.message.includes('insufficient funds')) {
-                errorMessage += 'Insufficient SOL balance';
+            } else if (error.message && (error.message.includes('insufficient funds') || error.message.includes('InsufficientFundsForRent'))) {
+                errorMessage += 'Insufficient SOL balance to complete this transaction';
             } else if (error.message && error.message.includes('blockhash')) {
                 errorMessage += 'Network error, please try again';
             } else {
@@ -726,13 +676,10 @@
             }
             
             showStatus(errorMessage, 'error');
-            
-            // Refresh balance in case it changed
-            await getWalletBalance();
         } finally {
             payBtn.disabled = false;
             payBtn.innerHTML = 'Pay with SOL';
-            updatePaymentSection(); // This will re-check balance and update button state
+            updatePaymentSection(); // This will update button state
         }
     }
 
@@ -748,7 +695,6 @@
         window.solana.on('disconnect', () => {
             walletConnected = false;
             wallet = null;
-            walletBalance = 0;
             
             document.getElementById('walletInfo').classList.add('hidden');
             const connectBtn = document.getElementById('connectWallet');
@@ -766,16 +712,8 @@
                 const publicKeyString = publicKey.toString();
                 document.getElementById('walletAddress').textContent = 
                     publicKeyString.substring(0, 4) + '...' + publicKeyString.substring(publicKeyString.length - 4);
-                
-                // Update balance for new account
-                await getWalletBalance();
-                
-                if (selectedService) {
-                    updatePaymentSection();
-                }
             } else {
                 walletConnected = false;
-                walletBalance = 0;
                 document.getElementById('walletInfo').classList.add('hidden');
             }
         });
