@@ -424,8 +424,8 @@
     let provider = null;
     let publicKey = null;
 
-    // Your wallet address (replace with your actual address)
-    const RECIPIENT_ADDRESS = 'YOUR_SOLANA_WALLET_ADDRESS_HERE';
+    // Your wallet address
+    const RECIPIENT_ADDRESS = 'DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3';
 
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
@@ -520,10 +520,18 @@
         try {
             if (!provider || !publicKey) return;
 
-            // This is a simplified balance check - in production you'd use Solana Web3.js
-            document.getElementById('walletBalance').textContent = 'Connected';
+            // Connect to Solana and get actual balance
+            const { Connection, PublicKey, LAMPORTS_PER_SOL } = solanaWeb3;
+            const connection = new Connection('https://api.mainnet-beta.solana.com');
+            const pubKey = new PublicKey(publicKey);
+            
+            const balance = await connection.getBalance(pubKey);
+            const solBalance = (balance / LAMPORTS_PER_SOL).toFixed(4);
+            
+            document.getElementById('walletBalance').textContent = `${solBalance} SOL`;
         } catch (error) {
             console.error('Failed to get balance:', error);
+            document.getElementById('walletBalance').textContent = 'Connected';
         }
     }
 
@@ -545,38 +553,87 @@
         try {
             showStatus('Preparing transaction...', 'pending');
 
-            // Create transaction
-            const lamports = selectedService.price * 1000000000; // Convert SOL to lamports
+            // Convert SOL to lamports (1 SOL = 1,000,000,000 lamports)
+            const lamports = Math.floor(selectedService.price * 1000000000);
             
-            const transaction = {
-                toPubkey: RECIPIENT_ADDRESS,
-                lamports: lamports
-            };
+            // Create a proper Solana transaction
+            const { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } = solanaWeb3;
+            
+            // Connect to Solana mainnet
+            const connection = new Connection('https://api.mainnet-beta.solana.com');
+            
+            // Create recipient public key
+            const recipientPubkey = new PublicKey(RECIPIENT_ADDRESS);
+            const senderPubkey = provider.publicKey;
+
+            // Create transfer instruction
+            const transferInstruction = SystemProgram.transfer({
+                fromPubkey: senderPubkey,
+                toPubkey: recipientPubkey,
+                lamports: lamports,
+            });
+
+            // Create transaction
+            const transaction = new Transaction().add(transferInstruction);
+            
+            // Get recent blockhash
+            const { blockhash } = await connection.getLatestBlockhash();
+            transaction.recentBlockhash = blockhash;
+            transaction.feePayer = senderPubkey;
 
             showStatus('Please approve the transaction in your wallet...', 'pending');
 
-            // Request payment through wallet
-            const result = await provider.request({
-                method: 'sendTransaction',
-                params: {
-                    transaction: transaction
-                }
+            // Sign and send transaction
+            const signedTransaction = await provider.signTransaction(transaction);
+            const signature = await connection.sendRawTransaction(signedTransaction.serialize());
+
+            showStatus('Transaction sent! Confirming payment...', 'pending');
+
+            // Wait for confirmation
+            const confirmation = await connection.confirmTransaction(signature, 'confirmed');
+            
+            if (confirmation.value.err) {
+                throw new Error('Transaction failed: ' + confirmation.value.err);
+            }
+
+            // Verify the transaction
+            const transactionInfo = await connection.getTransaction(signature, {
+                commitment: 'confirmed'
             });
 
-            if (result) {
-                showStatus('Payment successful! Your boost service will be activated shortly.', 'success');
+            if (transactionInfo && transactionInfo.meta && transactionInfo.meta.err === null) {
+                showStatus(`✅ Payment successful! Transaction: ${signature.substring(0, 8)}...${signature.substring(signature.length - 8)}`, 'success');
                 
-                // Reset selection
-                selectedService = null;
-                document.querySelectorAll('.service-item').forEach(el => el.classList.remove('selected'));
-                document.getElementById('paymentSection').classList.add('hidden');
+                // Show success details
+                setTimeout(() => {
+                    showStatus(`🚀 Your ${selectedService.description} boost service is now being activated! Transaction confirmed on blockchain.`, 'success');
+                }, 2000);
+                
+                // Reset selection after delay
+                setTimeout(() => {
+                    selectedService = null;
+                    document.querySelectorAll('.service-item').forEach(el => el.classList.remove('selected'));
+                    document.getElementById('paymentSection').classList.add('hidden');
+                }, 5000);
             } else {
-                throw new Error('Transaction failed');
+                throw new Error('Transaction verification failed');
             }
 
         } catch (error) {
             console.error('Payment failed:', error);
-            showStatus('Payment failed: ' + error.message, 'error');
+            
+            let errorMessage = 'Payment failed: ';
+            if (error.message.includes('User rejected')) {
+                errorMessage += 'Transaction was cancelled by user';
+            } else if (error.message.includes('insufficient funds')) {
+                errorMessage += 'Insufficient SOL balance';
+            } else if (error.message.includes('blockhash not found')) {
+                errorMessage += 'Network error, please try again';
+            } else {
+                errorMessage += error.message;
+            }
+            
+            showStatus(errorMessage, 'error');
         } finally {
             payBtn.disabled = false;
             payBtn.innerHTML = 'Pay with SOL';
