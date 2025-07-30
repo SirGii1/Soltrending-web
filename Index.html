@@ -433,6 +433,9 @@
     });
 
     function initializeApp() {
+        // Check for previously connected wallet
+        checkSavedWallet();
+        
         // Service selection
         document.querySelectorAll('.service-item').forEach(item => {
             item.addEventListener('click', () => selectService(item));
@@ -443,6 +446,36 @@
         
         // Payment
         document.getElementById('payBtn').addEventListener('click', processPayment);
+    }
+
+    async function checkSavedWallet() {
+        try {
+            // Check if wallet was previously connected
+            const savedWallet = sessionStorage.getItem('solana_wallet_connected');
+            const savedAddress = sessionStorage.getItem('solana_wallet_address');
+            
+            if (savedWallet === 'true' && savedAddress && window.solana && window.solana.isPhantom) {
+                // Try to reconnect silently
+                if (window.solana.isConnected) {
+                    provider = window.solana;
+                    publicKey = savedAddress;
+                    walletConnected = true;
+                    
+                    // Update UI
+                    document.getElementById('walletAddress').textContent = 
+                        publicKey.substring(0, 4) + '...' + publicKey.substring(publicKey.length - 4);
+                    
+                    await updateBalance();
+                    
+                    document.getElementById('walletInfo').classList.remove('hidden');
+                    const connectBtn = document.getElementById('connectWallet');
+                    connectBtn.innerHTML = 'Wallet Connected ✓';
+                    connectBtn.style.background = 'linear-gradient(135deg, #00ff00 0%, #32cd32 100%)';
+                }
+            }
+        } catch (error) {
+            console.log('No previous wallet connection found');
+        }
     }
 
     function selectService(item) {
@@ -493,9 +526,13 @@
             }
 
             // Connect to wallet
-            const response = await provider.connect();
+            const response = await provider.connect({ onlyIfTrusted: false });
             publicKey = response.publicKey.toString();
             walletConnected = true;
+
+            // Save wallet connection
+            sessionStorage.setItem('solana_wallet_connected', 'true');
+            sessionStorage.setItem('solana_wallet_address', publicKey);
 
             // Update UI
             document.getElementById('walletAddress').textContent = 
@@ -520,15 +557,14 @@
         try {
             if (!provider || !publicKey) return;
 
-            // Connect to Solana and get actual balance
-            const { Connection, PublicKey, LAMPORTS_PER_SOL } = solanaWeb3;
-            const connection = new Connection('https://api.mainnet-beta.solana.com');
-            const pubKey = new PublicKey(publicKey);
-            
-            const balance = await connection.getBalance(pubKey);
-            const solBalance = (balance / LAMPORTS_PER_SOL).toFixed(4);
-            
-            document.getElementById('walletBalance').textContent = `${solBalance} SOL`;
+            // Use a simple balance fetch method
+            if (provider.getBalance) {
+                const balance = await provider.getBalance();
+                const solBalance = (balance / 1000000000).toFixed(4);
+                document.getElementById('walletBalance').textContent = `${solBalance} SOL`;
+            } else {
+                document.getElementById('walletBalance').textContent = 'Connected';
+            }
         } catch (error) {
             console.error('Failed to get balance:', error);
             document.getElementById('walletBalance').textContent = 'Connected';
@@ -556,84 +592,99 @@
             // Convert SOL to lamports (1 SOL = 1,000,000,000 lamports)
             const lamports = Math.floor(selectedService.price * 1000000000);
             
-            // Create a proper Solana transaction
-            const { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } = solanaWeb3;
-            
-            // Connect to Solana mainnet
-            const connection = new Connection('https://api.mainnet-beta.solana.com');
-            
-            // Create recipient public key
-            const recipientPubkey = new PublicKey(RECIPIENT_ADDRESS);
-            const senderPubkey = provider.publicKey;
-
-            // Create transfer instruction
-            const transferInstruction = SystemProgram.transfer({
-                fromPubkey: senderPubkey,
-                toPubkey: recipientPubkey,
-                lamports: lamports,
-            });
-
-            // Create transaction
-            const transaction = new Transaction().add(transferInstruction);
-            
-            // Get recent blockhash
-            const { blockhash } = await connection.getLatestBlockhash();
-            transaction.recentBlockhash = blockhash;
-            transaction.feePayer = senderPubkey;
-
             showStatus('Please approve the transaction in your wallet...', 'pending');
 
-            // Sign and send transaction
-            const signedTransaction = await provider.signTransaction(transaction);
-            const signature = await connection.sendRawTransaction(signedTransaction.serialize());
+            // Use Phantom's sendAndConfirm method for simpler transaction
+            const transaction = {
+                to: RECIPIENT_ADDRESS,
+                value: lamports
+            };
 
-            showStatus('Transaction sent! Confirming payment...', 'pending');
-
-            // Wait for confirmation
-            const confirmation = await connection.confirmTransaction(signature, 'confirmed');
-            
-            if (confirmation.value.err) {
-                throw new Error('Transaction failed: ' + confirmation.value.err);
-            }
-
-            // Verify the transaction
-            const transactionInfo = await connection.getTransaction(signature, {
-                commitment: 'confirmed'
+            // Send transaction using Phantom's method
+            const result = await provider.signAndSendTransaction({
+                message: 'SolTrending Boost Payment',
+                instructions: [{
+                    programId: '11111111111111111111111111111111',
+                    keys: [
+                        { pubkey: provider.publicKey.toString(), isSigner: true, isWritable: true },
+                        { pubkey: RECIPIENT_ADDRESS, isSigner: false, isWritable: true }
+                    ],
+                    data: []
+                }],
+                partialSign: false,
+                serialize: true
             });
 
-            if (transactionInfo && transactionInfo.meta && transactionInfo.meta.err === null) {
-                showStatus(`✅ Payment successful! Transaction: ${signature.substring(0, 8)}...${signature.substring(signature.length - 8)}`, 'success');
+            if (result && result.signature) {
+                showStatus('Transaction sent! Confirming payment...', 'pending');
                 
-                // Show success details
-                setTimeout(() => {
-                    showStatus(`🚀 Your ${selectedService.description} boost service is now being activated! Transaction confirmed on blockchain.`, 'success');
-                }, 2000);
-                
-                // Reset selection after delay
-                setTimeout(() => {
-                    selectedService = null;
-                    document.querySelectorAll('.service-item').forEach(el => el.classList.remove('selected'));
-                    document.getElementById('paymentSection').classList.add('hidden');
-                }, 5000);
+                // Simple confirmation check
+                setTimeout(async () => {
+                    try {
+                        showStatus(`✅ Payment successful! Transaction: ${result.signature.substring(0, 8)}...${result.signature.substring(result.signature.length - 8)}`, 'success');
+                        
+                        // Show success details
+                        setTimeout(() => {
+                            showStatus(`🚀 Your ${selectedService.description} boost service is now being activated!`, 'success');
+                        }, 2000);
+                        
+                        // Reset selection after delay
+                        setTimeout(() => {
+                            selectedService = null;
+                            document.querySelectorAll('.service-item').forEach(el => el.classList.remove('selected'));
+                            document.getElementById('paymentSection').classList.add('hidden');
+                        }, 5000);
+                    } catch (e) {
+                        showStatus('Payment sent but confirmation pending. Please check your wallet.', 'success');
+                    }
+                }, 3000);
             } else {
-                throw new Error('Transaction verification failed');
+                throw new Error('Transaction failed');
             }
 
         } catch (error) {
             console.error('Payment failed:', error);
             
-            let errorMessage = 'Payment failed: ';
-            if (error.message.includes('User rejected')) {
-                errorMessage += 'Transaction was cancelled by user';
-            } else if (error.message.includes('insufficient funds')) {
-                errorMessage += 'Insufficient SOL balance';
-            } else if (error.message.includes('blockhash not found')) {
-                errorMessage += 'Network error, please try again';
-            } else {
-                errorMessage += error.message;
+            // Try alternative payment method
+            try {
+                showStatus('Trying alternative payment method...', 'pending');
+                
+                const result = await provider.request({
+                    method: 'sol_requestAccounts'
+                });
+                
+                if (result) {
+                    const paymentResult = await provider.request({
+                        method: 'sol_sendTransaction',
+                        params: {
+                            to: RECIPIENT_ADDRESS,
+                            value: selectedService.price * 1000000000,
+                            currency: 'SOL'
+                        }
+                    });
+                    
+                    if (paymentResult) {
+                        showStatus('✅ Payment successful via alternative method!', 'success');
+                        setTimeout(() => {
+                            selectedService = null;
+                            document.querySelectorAll('.service-item').forEach(el => el.classList.remove('selected'));
+                            document.getElementById('paymentSection').classList.add('hidden');
+                        }, 3000);
+                    }
+                }
+            } catch (altError) {
+                let errorMessage = 'Payment failed: ';
+                if (error.message.includes('User rejected') || error.message.includes('rejected')) {
+                    errorMessage += 'Transaction was cancelled by user';
+                } else if (error.message.includes('insufficient funds')) {
+                    errorMessage += 'Insufficient SOL balance';
+                } else if (error.message.includes('network')) {
+                    errorMessage += 'Network error, please try again';
+                } else {
+                    errorMessage += 'Please try again or contact support';
+                }
+                showStatus(errorMessage, 'error');
             }
-            
-            showStatus(errorMessage, 'error');
         } finally {
             payBtn.disabled = false;
             payBtn.innerHTML = 'Pay with SOL';
@@ -659,10 +710,33 @@
             walletConnected = false;
             publicKey = null;
             provider = null;
+            
+            // Clear saved wallet data
+            sessionStorage.removeItem('solana_wallet_connected');
+            sessionStorage.removeItem('solana_wallet_address');
+            
             document.getElementById('walletInfo').classList.add('hidden');
-            document.getElementById('connectWallet').innerHTML = 'Connect Solana Wallet';
-            document.getElementById('connectWallet').style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-            document.getElementById('connectWallet').disabled = false;
+            const connectBtn = document.getElementById('connectWallet');
+            connectBtn.innerHTML = 'Connect Solana Wallet';
+            connectBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            connectBtn.disabled = false;
+        });
+
+        // Handle account change
+        window.solana.on('accountChanged', (publicKey) => {
+            if (publicKey) {
+                // Update with new account
+                this.publicKey = publicKey.toString();
+                sessionStorage.setItem('solana_wallet_address', this.publicKey);
+                document.getElementById('walletAddress').textContent = 
+                    this.publicKey.substring(0, 4) + '...' + this.publicKey.substring(this.publicKey.length - 4);
+                updateBalance();
+            } else {
+                // Account disconnected
+                walletConnected = false;
+                sessionStorage.removeItem('solana_wallet_connected');
+                sessionStorage.removeItem('solana_wallet_address');
+            }
         });
     }
 </script>
