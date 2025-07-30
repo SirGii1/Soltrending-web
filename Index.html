@@ -538,11 +538,169 @@
                 payBtn.textContent = 'Connect Wallet First';
                 payBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
             } else {
-                payBtn.disabled = false;
-                payBtn.textContent = 'Pay with SOL';
-                payBtn.style.background = 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)';
+                errorMessage += error.message || 'Unknown error occurred';
             }
             
+            showStatus(errorMessage, 'error');
+            
+        } finally {
+            payBtn.disabled = false;
+            payBtn.innerHTML = 'Pay with SOL';
+            updatePaymentSection();
+        }
+    }
+
+    function showManualPayment() {
+        document.getElementById('manualPaymentSection').classList.remove('hidden');
+        showStatus('Please send the exact amount to the address below, then click verify.', 'info');
+    }
+
+    async function copyAddress() {
+        try {
+            await navigator.clipboard.writeText(RECIPIENT_ADDRESS);
+            showStatus('✅ Address copied to clipboard!', 'success');
+            
+            const copyBtn = document.getElementById('copyAddressBtn');
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = '✅ Copied!';
+            copyBtn.style.background = 'linear-gradient(135deg, #00ff00 0%, #32cd32 100%)';
+            
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+                copyBtn.style.background = 'linear-gradient(135deg, #00ff00 0%, #32cd32 100%)';
+            }, 2000);
+        } catch (error) {
+            showStatus('❌ Failed to copy address. Please copy manually.', 'error');
+        }
+    }
+
+    async function verifyPayment() {
+        if (!selectedService) {
+            showStatus('No service selected', 'error');
+            return;
+        }
+
+        const verifyBtn = document.getElementById('verifyPaymentBtn');
+        verifyBtn.disabled = true;
+        verifyBtn.innerHTML = '<span class="loading"></span> Verifying...';
+
+        try {
+            showStatus('🔍 Checking for payment...', 'pending');
+
+            // Get recent transactions to the recipient address
+            const recipientPubkey = new solanaWeb3.PublicKey(RECIPIENT_ADDRESS);
+            const signatures = await connection.getSignaturesForAddress(recipientPubkey, { limit: 20 });
+
+            const requiredAmount = Math.floor(selectedService.price * solanaWeb3.LAMPORTS_PER_SOL);
+            const currentTime = Date.now();
+            const timeWindow = 30 * 60 * 1000; // 30 minutes
+
+            // Check recent transactions
+            for (const sig of signatures) {
+                const txTime = sig.blockTime * 1000;
+                
+                // Only check transactions from the last 30 minutes
+                if (currentTime - txTime > timeWindow) continue;
+
+                try {
+                    const tx = await connection.getTransaction(sig.signature, {
+                        commitment: 'confirmed'
+                    });
+
+                    if (tx && tx.meta && !tx.meta.err) {
+                        // Check if this transaction transferred the exact amount
+                        const preBalance = tx.meta.preBalances[1] || 0; // Recipient pre-balance
+                        const postBalance = tx.meta.postBalances[1] || 0; // Recipient post-balance
+                        const transferredAmount = postBalance - preBalance;
+
+                        if (Math.abs(transferredAmount - requiredAmount) < 1000) { // Allow small variance for fees
+                            // Payment found!
+                            showStatus('✅ Payment detected and confirmed!', 'success');
+                            
+                            setTimeout(() => {
+                                showStatus(`🚀 Payment confirmed! Your ${selectedService.description} boost will start in 10 minutes.`, 'success');
+                            }, 2000);
+                            
+                            setTimeout(() => {
+                                resetPaymentSection();
+                            }, 8000);
+                            
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    console.log('Error checking transaction:', error);
+                    continue;
+                }
+            }
+
+            // No matching payment found
+            showStatus('❌ Payment not detected. Please ensure you sent the exact amount and try again in a few minutes.', 'error');
+
+        } catch (error) {
+            console.error('Payment verification failed:', error);
+            showStatus('❌ Failed to verify payment. Please try again.', 'error');
+        } finally {
+            verifyBtn.disabled = false;
+            verifyBtn.innerHTML = '🔍 Verify Payment';
+        }
+    }
+
+    function resetPaymentSection() {
+        selectedService = null;
+        paymentAttempts = 0;
+        document.querySelectorAll('.service-item').forEach(el => el.classList.remove('selected'));
+        document.getElementById('paymentSection').classList.add('hidden');
+        document.getElementById('manualPaymentSection').classList.add('hidden');
+        document.getElementById('statusMessage').innerHTML = '';
+    }
+
+    function showStatus(message, type) {
+        const statusDiv = document.getElementById('statusMessage');
+        statusDiv.innerHTML = message;
+        statusDiv.className = `status-message status-${type}`;
+        statusDiv.style.display = 'block';
+    }
+
+    // Handle wallet events
+    if (window.solana) {
+        window.solana.on('disconnect', () => {
+            walletConnected = false;
+            wallet = null;
+            
+            document.getElementById('walletInfo').classList.add('hidden');
+            const connectBtn = document.getElementById('connectWallet');
+            connectBtn.innerHTML = 'Connect Solana Wallet';
+            connectBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            connectBtn.disabled = false;
+            
+            if (selectedService) {
+                updatePaymentSection();
+            }
+        });
+
+        window.solana.on('accountChanged', async (publicKey) => {
+            if (publicKey) {
+                const publicKeyString = publicKey.toString();
+                document.getElementById('walletAddress').textContent = 
+                    publicKeyString.substring(0, 4) + '...' + publicKeyString.substring(publicKeyString.length - 4);
+            } else {
+                walletConnected = false;
+                document.getElementById('walletInfo').classList.add('hidden');
+            }
+        });
+    }
+</script>
+```
+
+</body>
+</html>
+                    payBtn.disabled = false;
+                    payBtn.textContent = 'Pay with SOL';
+                    payBtn.style.background = 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)';
+                }
+
+```
             paymentSection.classList.remove('hidden');
         } else {
             paymentSection.classList.add('hidden');
