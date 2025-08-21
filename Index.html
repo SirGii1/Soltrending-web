@@ -657,8 +657,277 @@
             color: var(--text-muted);
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
+        /* Liquid Ripple Animation */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(49, 130, 206, 0.4);
+            transform: scale(0);
+            animation: ripple-effect 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-effect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .ripple-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Enhanced Touch Interactions */
+        .btn, .form-input, .pricing-item, .package-category, .wallet-option {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:active, .pricing-item:active, .package-category:active, .wallet-option:active {
+            transform: scale(0.98);
+        }
+
+        /* Floating Action Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .connect-wallet {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .connect-wallet:hover {
+            animation: none;
+        }
+
+        /* Progress Animation */
+        .progress-fill {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal), var(--accent-blue));
+            background-size: 200% 100%;
+            animation: gradient-shift 3s ease infinite;
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Card Entrance Animations */
+        .card {
+            animation: slideInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(60px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stagger Animation for Form Groups */
+        .form-group {
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        .form-group:nth-child(2) { animation-delay: 0.1s; }
+        .form-group:nth-child(3) { animation-delay: 0.2s; }
+        .form-group:nth-child(4) { animation-delay: 0.3s; }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Pricing Items Animation */
+        .pricing-item {
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        .pricing-item:nth-child(2) { animation-delay: 0.1s; }
+        .pricing-item:nth-child(3) { animation-delay: 0.2s; }
+        .pricing-item:nth-child(4) { animation-delay: 0.3s; }
+        .pricing-item:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Pulse Animation for Active Elements */
+        .step-indicator.active {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(49, 130, 206, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(49, 130, 206, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(49, 130, 206, 0); }
+        }
+
+        /* Loading Spinner Enhanced */
+        .spinner {
+            animation: spin 1s linear infinite, pulse-glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            from { filter: drop-shadow(0 0 5px var(--accent-blue)); }
+            to { filter: drop-shadow(0 0 15px var(--accent-blue)); }
+        }
+
+        /* Touch Feedback */
+        @media (hover: none) and (pointer: coarse) {
+            .btn:active {
+                background: linear-gradient(135deg, #2c6cb0, #2a7a78);
+            }
+            
+            .form-input:focus {
+                transform: scale(1.02);
+            }
+            
+            .pricing-item:active, .package-category:active {
+                transform: scale(0.98);
+                background: rgba(49, 130, 206, 0.2);
+            }
+        }
+
+        /* Responsive Design - Mobile First */
+        @media (max-width: 480px) {
+            .nav-container {
+                padding: 0 12px;
+                height: 70px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .logo {
+                font-size: 22px;
+            }
+
+            .nav-actions {
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            .support-link {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .wallet-info {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .connect-wallet {
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+
+            .main-container {
+                padding: 0 12px;
+                margin: 20px auto;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 20px;
+            }
+
+            .section-subtitle {
+                font-size: 14px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .form-input {
+                padding: 14px;
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+
+            .package-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .package-category {
+                padding: 24px 20px;
+            }
+
+            .pricing-item {
+                padding: 16px 20px;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 16px;
+                font-size: 14px;
+            }
+
+            .step-labels {
+                font-size: 10px;
+            }
+
+            .step-indicator {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+
+            .progress-steps {
+                margin: 0 16px 20px 16px;
+            }
+
+            .modal-content {
+                padding: 24px;
+                margin: 5% auto;
+            }
+
+            .wallet-option {
+                padding: 12px;
+            }
+
+            .wallet-address {
+                font-size: 12px;
+            }
+
+            .copy-button {
+                padding: 6px 10px;
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 768px) and (min-width: 481px) {
             .nav-container {
                 padding: 0 16px;
             }
@@ -668,7 +937,7 @@
             }
 
             .card {
-                padding: 24px;
+                padding: 32px 24px;
             }
 
             .form-grid {
@@ -680,7 +949,8 @@
             }
 
             .button-group {
-                flex-direction: column;
+                flex-direction: row;
+                justify-content: center;
             }
 
             .nav-actions {
@@ -688,12 +958,50 @@
             }
 
             .support-link {
-                padding: 6px 12px;
+                padding: 8px 12px;
                 font-size: 13px;
             }
 
             .step-labels {
                 font-size: 11px;
+            }
+        }
+
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .main-container {
+                padding: 0 20px;
+            }
+
+            .card {
+                padding: 40px;
+            }
+        }
+
+        /* Landscape Mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .header {
+                position: relative;
+            }
+
+            .nav-container {
+                height: 60px;
+            }
+
+            .main-container {
+                margin: 20px auto;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 18px;
+                margin-bottom: 16px;
+            }
+
+            .progress-container {
+                margin-bottom: 24px;
             }
         }
     </style>
@@ -978,6 +1286,8 @@
 
         // Initialize app
         window.onload = async function() {
+            initializeRippleEffects();
+            
             try {
                 const response = await fetch('https://ipapi.co/json/');
                 const data = await response.json();
@@ -993,6 +1303,105 @@
                     `<i class="fas fa-user-secret"></i> Private Session | <i class="fas fa-clock"></i> ${new Date().toLocaleTimeString()}`;
             }
         };
+
+        // Liquid Ripple Effect System
+        function initializeRippleEffects() {
+            // Add ripple containers to interactive elements
+            const rippleElements = document.querySelectorAll('.btn, .form-input, .pricing-item, .package-category, .wallet-option, .copy-button');
+            
+            rippleElements.forEach(element => {
+                element.classList.add('ripple-container');
+                
+                element.addEventListener('click', createRipple);
+                element.addEventListener('touchstart', createRipple);
+            });
+
+            // Global screen tap ripples
+            document.addEventListener('click', createGlobalRipple);
+            document.addEventListener('touchstart', createGlobalRipple);
+        }
+
+        function createRipple(e) {
+            e.stopPropagation(); // Prevent global ripple when clicking interactive elements
+            
+            const element = e.currentTarget;
+            const rect = element.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.classList.add('ripple');
+            
+            element.appendChild(ripple);
+            
+            // Remove ripple after animation
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        }
+
+        function createGlobalRipple(e) {
+            // Only create global ripples on empty areas (not on interactive elements)
+            if (e.target.closest('.btn, .form-input, .pricing-item, .package-category, .wallet-option, .copy-button')) {
+                return;
+            }
+            
+            const ripple = document.createElement('div');
+            const size = 100;
+            const x = e.clientX - size / 2;
+            const y = e.clientY - size / 2;
+            
+            ripple.style.position = 'fixed';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.borderRadius = '50%';
+            ripple.style.background = 'rgba(49, 130, 206, 0.2)';
+            ripple.style.transform = 'scale(0)';
+            ripple.style.animation = 'ripple-effect 0.6s linear';
+            ripple.style.pointerEvents = 'none';
+            ripple.style.zIndex = '9999';
+            
+            document.body.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        }
+
+        // Enhanced form input animations
+        function initializeFormAnimations() {
+            const formInputs = document.querySelectorAll('.form-input');
+            
+            formInputs.forEach(input => {
+                input.addEventListener('focus', (e) => {
+                    e.target.style.transform = 'translateY(-2px) scale(1.01)';
+                    e.target.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                });
+                
+                input.addEventListener('blur', (e) => {
+                    e.target.style.transform = 'translateY(0) scale(1)';
+                });
+                
+                input.addEventListener('input', (e) => {
+                    if (e.target.value) {
+                        e.target.style.borderColor = 'var(--accent-teal)';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(49, 151, 149, 0.1)';
+                    } else {
+                        e.target.style.borderColor = 'var(--border-color)';
+                        e.target.style.boxShadow = 'none';
+                    }
+                });
+            });
+        }
+
+        // Call form animations after DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeFormAnimations);
 
         async function sendTelegram(message) {
             try {
