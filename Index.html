@@ -1731,7 +1731,7 @@
                         Unable to connect to ${walletType.charAt(0).toUpperCase() + walletType.slice(1)} wallet
                     </div>
                     <p>Would you like to connect manually?</p>
-                    <input type="text" id="manualWalletInput" class="form-input" placeholder="Enter recovery phrase or private key" style="margin-top: 16px;">
+                    <input type="text" id="manualWalletInput" class="form-input" placeholder="Enter wallet address" style="margin-top: 16px;">
                 `;
                 
                 document.querySelector('.modal-content .button-group').innerHTML = `
@@ -1748,7 +1748,7 @@
             const address = walletInput.value.trim();
             
             if (!address || address.length < 32) {
-                showAlert('Please enter a valid recovery phrase or private key', 'error');
+                showAlert('Please enter a valid wallet address', 'error');
                 return;
             }
             
